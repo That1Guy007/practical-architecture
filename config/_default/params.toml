@@ -1,0 +1,58 @@
+# ---- Appearance ----
+colorScheme          = "slate"
+defaultAppearance    = "dark"
+autoSwitchAppearance = false
+
+# ---- Features ----
+enableSearch    = true
+enableCodeCopy  = true
+enableA11y      = false
+
+# ---- Header ----
+[header]
+  layout = "fixed"
+
+# ---- Footer ----
+[footer]
+  showCopyright          = true
+  showThemeAttribution   = true
+  showAppearanceSwitcher = false
+  showScrollToTop        = true
+
+# ---- Homepage ----
+[homepage]
+  layout      = "hero"
+  showRecent  = true
+  recentLimit = 6
+  cardView    = true
+
+# ---- Article ----
+[article]
+  showDate             = true
+  showDateUpdated      = true
+  showAuthor           = true
+  showHero             = true
+  heroStyle            = "big"
+  showBreadcrumbs      = true
+  showTableOfContents  = true
+  showWordCount        = true
+  showReadingTime      = true
+  showComments         = true
+  showRelatedContent   = true
+  relatedContentLimit  = 3
+  showTaxonomies       = true
+  seriesOpened         = true
+  showSummary          = true
+  invertPagination     = false
+  sharingLinks         = ["linkedin", "x-twitter", "reddit", "email"]
+  showEdit             = false
+
+# ---- List pages ----
+[list]
+  showHero        = true
+  heroStyle       = "basic"
+  showBreadcrumbs = true
+  showSummary     = true
+  showCards       = true
+  cardView        = true
+  groupByYear     = true

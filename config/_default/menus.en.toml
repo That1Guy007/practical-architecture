@@ -1,0 +1,37 @@
+[[main]]
+  name    = "Demystified"
+  pageRef = "demystified"
+  weight  = 10
+
+[[main]]
+  name    = "Penny for a Thought"
+  pageRef = "penny-for-a-thought"
+  weight  = 20
+
+[[main]]
+  identifier = "search"
+  pre        = "search"
+  url        = "/search/"
+  weight     = 90
+
+[[main]]
+  identifier = "linkedin"
+  pre        = "linkedin"
+  url        = "https://www.linkedin.com/in/carlos-hernandez"
+  weight     = 100
+
+[[main]]
+  identifier = "github"
+  pre        = "github"
+  url        = "https://github.com/That1Guy007"
+  weight     = 110
+
+[[footer]]
+  name    = "Tags"
+  pageRef = "tags"
+  weight  = 10
+
+[[footer]]
+  name    = "Series"
+  pageRef = "series"
+  weight  = 20
