@@ -10,7 +10,7 @@ enableA11y      = false
 
 # ---- Header ----
 [header]
-  layout = "fixed"
+  layout = "fixed-fill"
 
 # ---- Footer ----
 [footer]
