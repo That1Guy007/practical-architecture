@@ -2,7 +2,7 @@
 title: "Post-Quantum Cryptography, Explained"
 date: 2026-06-03
 lastmod: 2026-06-03
-draft: true
+draft: false
 description: "Lattice problems, CRYSTALS-Kyber, and why RSA and ECC are on borrowed time — without the math degree."
 summary: "A ground-up explainer of post-quantum cryptography: why current public-key systems will fall to quantum computers, how lattice-based algorithms work, and what engineers need to do right now."
 series: ["Demystified"]
