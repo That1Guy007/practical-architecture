@@ -16,7 +16,7 @@ title      = "Practical Architecture"
   headline = "Clear thinking on complex systems"
   bio      = "I write about cryptography, platform engineering, and the business of software. Two series: Demystified (technical deep dives) and Penny for a Thought (industry opinions)."
   links = [
-    { linkedin = "https://www.linkedin.com/in/carlos-hernandez" },
+    { linkedin = "https://www.linkedin.com/in/compscicarlos/" },
     { github   = "https://github.com/That1Guy007" },
     { rss      = "/index.xml" },
   ]

@@ -17,7 +17,7 @@
 [[main]]
   identifier = "linkedin"
   pre        = "linkedin"
-  url        = "https://www.linkedin.com/in/carlos-hernandez"
+  url        = "https://www.linkedin.com/in/compscicarlos/"
   weight     = 100
 
 [[main]]

@@ -9,6 +9,6 @@ This blog is where I write through what I know and what I'm learning. No padding
 
 ---
 
-**[Demystified](/demystified/)** is the technical series. If a protocol, cryptographic primitive, or platform concept seems like black magic, I want to change that. Posts here are long-form, detailed, and designed to give you a real mental model — not just a checklist.
+[**Demystified**](/demystified/) is the technical series. If a protocol, cryptographic primitive, or platform concept seems like black magic, I want to change that. Posts here are long-form, detailed, and designed to give you a real mental model — not just a checklist.
 
-**[Penny for a Thought](/penny-for-a-thought/)** is where I share opinions on the industry. Job roles in sales engineering, the fear economy in security, the quiet compounding of software costs — the conversations that don't get enough honest airtime.
+[**Penny for a Thought**](/penny-for-a-thought/) is where I share opinions on the industry. Job roles in sales engineering, the fear economy in security, the quiet compounding of software costs — the conversations that don't get enough honest airtime.
