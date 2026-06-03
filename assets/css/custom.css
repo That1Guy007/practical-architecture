@@ -1,0 +1,38 @@
+/* ── Navigation bar ─────────────────────────────────────────────────────── */
+
+#site-header {
+  background-color: rgba(15, 17, 21, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+  box-shadow:
+    0 1px 0 rgba(34, 211, 238, 0.12),
+    0 4px 24px rgba(0, 0, 0, 0.55);
+}
+
+/* Accent glow line along the very top edge */
+#site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(34, 211, 238, 0.7) 30%,
+    rgba(34, 211, 238, 0.9) 50%,
+    rgba(34, 211, 238, 0.7) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Nav links — subtle lift on hover */
+#site-nav a {
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+#site-nav a:hover {
+  color: #22d3ee;
+  text-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
+}
