@@ -1,7 +1,7 @@
 ---
 title: "The Quiet Software Cost Crisis Nobody Wants to Talk About"
-date: 2026-06-10
-lastmod: 2026-06-10
+date: 2026-06-03
+lastmod: 2026-06-03
 draft: false
 description: "Licensing costs have compounded while salaries have plateaued. Here's the math your CFO hasn't shown the engineering team."
 summary: "The TCO of modern software stacks has quietly tripled in five years. This is what the industry looks like when vendors capture more value than they create."
