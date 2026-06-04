@@ -35,7 +35,6 @@
   inset-block: 0;
   right: 0;
   z-index: 120;
-  isolation: isolate; /* establishes stacking context for absolute children */
   width: 18rem;
   overflow-y: auto;
   background-color: rgb(249, 250, 251);
