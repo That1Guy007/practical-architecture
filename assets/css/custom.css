@@ -25,6 +25,31 @@
   pointer-events: none;
 }
 
+/* ── Series dropdown menu ────────────────────────────────────────────────── */
+
+/* Override Blowfish's near-transparent dropdown bg (bg-neutral-800/25)
+   with a solid dark panel that clearly lifts off the page */
+.nested-menu .menuhide > div {
+  background-color: rgba(10, 12, 16, 0.97) !important;
+  border: 1px solid rgba(34, 211, 238, 0.35) !important;
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(0) !important;
+  -webkit-backdrop-filter: blur(0) !important;
+}
+
+/* Dropdown links — subtle separator line between items */
+.nested-menu .menuhide a {
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nested-menu .menuhide a:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 /* Nav links — cyan glow on hover */
 .main-menu a {
   transition: color 0.15s ease, text-shadow 0.15s ease;
