@@ -10,7 +10,7 @@ series_order: 1
 tags: []
 categories: ["penny-for-a-thought"]
 showComments: true
-showTableOfContents: false
+showTableOfContents: true
 showReadingTime: true
 showHero: true
 heroStyle: "basic"

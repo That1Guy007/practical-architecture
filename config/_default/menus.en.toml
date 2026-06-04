@@ -1,7 +1,6 @@
 [[main]]
   name       = "Series"
   identifier = "series-nav"
-  url        = "/series/"
   weight     = 10
 
 [[main]]
@@ -15,6 +14,12 @@
   parent = "series-nav"
   url    = "/penny-for-a-thought/"
   weight = 12
+
+[[main]]
+  name   = "All Series"
+  parent = "series-nav"
+  url    = "/series/"
+  weight = 13
 
 [[main]]
   name   = "Browse All Posts"
