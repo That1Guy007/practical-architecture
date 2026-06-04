@@ -3,7 +3,7 @@ title: "Practical Architecture"
 description: "My thoughts today to help tomorrow"
 ---
 
-Welcome to my blog — I'm a solution architect who spends a lot of time thinking about how complex systems actually work, and try to demystify security, cloud, architecture, and the business of technology.
+Welcome to my blog — I'm a solution architect who spends a lot of time thinking about how complex systems actually work, and try to demystify security, cloud, architecture, business, and the human and non human factors.
 
 This blog is where I write through what I know and what I'm learning. No padding, no fear-mongering, no vendor fluff...
 
