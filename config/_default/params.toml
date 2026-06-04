@@ -2,7 +2,7 @@
 colorScheme          = "slate"
 defaultAppearance    = "dark"
 autoSwitchAppearance = false
-logo                 = "img/logo.png"
+logo                 = "img/blog-emblem-256x256-transparent.png"
 
 # ---- Features ----
 enableSearch    = true

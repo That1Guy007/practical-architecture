@@ -51,14 +51,13 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: /tmp/hugo_cache
-          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum', 'assets/**') }}
           restore-keys: hugo-${{ runner.os }}-
 
       - name: Build
         run: |
           hugo \
             --gc \
-            --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/" \
             --cacheDir /tmp/hugo_cache
 
@@ -66,7 +65,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: /tmp/hugo_cache
-          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum', 'assets/**') }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
