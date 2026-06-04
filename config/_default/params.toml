@@ -2,6 +2,7 @@
 colorScheme          = "slate"
 defaultAppearance    = "dark"
 autoSwitchAppearance = false
+logo                 = "img/logo.png"
 
 # ---- Features ----
 enableSearch    = true

@@ -1,47 +1,13 @@
 <script>
-  // Run after the deferred main bundle so buildIndex is already defined.
+  // Guard the keyup handler: if the user types before index.json finishes
+  // loading, fuse is still undefined — skip the search call instead of throwing.
   document.addEventListener('DOMContentLoaded', function () {
-
-    // Override Blowfish's buildIndex with a more forgiving Fuse.js threshold.
-    // The default threshold: 0.0 (exact-only) is too strict for partial-word
-    // searches against our stub post bodies.
-    window.buildIndex = function () {
-      var wrapper = document.getElementById('search-wrapper');
-      if (!wrapper) return;
-      var baseURL = wrapper.getAttribute('data-url').replace(/\/?$/, '/');
-
-      var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState !== 4 || xhr.status !== 200) return;
-        try {
-          var data = JSON.parse(xhr.responseText);
-          window.fuse = new Fuse(data, {
-            shouldSort: true,
-            ignoreLocation: true,
-            threshold: 0.4,
-            includeMatches: true,
-            keys: [
-              { name: 'title',   weight: 0.8 },
-              { name: 'section', weight: 0.2 },
-              { name: 'summary', weight: 0.6 },
-              { name: 'content', weight: 0.4 },
-            ],
-          });
-          window.indexed = true;
-        } catch (e) { /* parse error — leave fuse undefined */ }
-      };
-      xhr.open('GET', baseURL + 'index.json');
-      xhr.send();
-    };
-
-    // Guard the keyup handler so a fast typer before the XHR completes
-    // doesn't trigger a TypeError on fuse.search().
     var searchInput = document.getElementById('search-query');
-    if (searchInput) {
-      searchInput.onkeyup = function (event) {
-        if (typeof window.fuse === 'undefined' || window.fuse === null) return;
-        if (typeof executeQuery === 'function') executeQuery(this.value);
-      };
-    }
+    if (!searchInput) return;
+    searchInput.onkeyup = function (event) {
+      if (typeof fuse !== 'undefined' && fuse !== null) {
+        executeQuery(this.value);
+      }
+    };
   });
 </script>
