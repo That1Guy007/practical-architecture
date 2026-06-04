@@ -24,15 +24,13 @@
     <div id="mobile-drawer" role="dialog" aria-modal="true"
       class="{{ if site.Params.enableStyledScrollbar | default true }}bf-scrollbar{{ end }}">
 
-      {{/* Drawer header — close button only */}}
-      <div class="flex items-center justify-end px-5 py-4 border-b border-neutral-200 dark:border-neutral-800">
-        <label for="mobile-menu-toggle"
-          class="flex items-center justify-center h-8 w-8 cursor-pointer rounded-lg bf-icon-color-hover border bf-border-color">
-          {{ partial "icon.html" "xmark" }}
-        </label>
-      </div>
+      {{/* Close button — pinned to top-right corner of the drawer */}}
+      <label for="mobile-menu-toggle"
+        class="absolute top-3 right-3 flex items-center justify-center h-10 w-10 cursor-pointer rounded-full bf-icon-color-hover border bf-border-color bg-neutral-100 dark:bg-neutral-800">
+        {{ partial "icon.html" "xmark" }}
+      </label>
 
-      <nav class="px-4 py-4 space-y-0.5">
+      <nav class="px-4 pt-16 pb-4 space-y-0.5">
         {{/* Named nav items */}}
         {{ range .Site.Menus.main }}
           {{ if .Name }}
