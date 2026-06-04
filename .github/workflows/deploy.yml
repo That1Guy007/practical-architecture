@@ -58,7 +58,6 @@ jobs:
         run: |
           hugo \
             --gc \
-            --baseURL "${{ steps.pages.outputs.base_url }}/" \
             --cacheDir /tmp/hugo_cache
 
       - name: Save Hugo cache

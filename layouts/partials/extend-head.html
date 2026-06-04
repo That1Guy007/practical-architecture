@@ -5,10 +5,6 @@
   var _Fuse = window.Fuse; // capture before deferred bundle can overwrite it
 
   document.addEventListener('DOMContentLoaded', function () {
-    console.log('[PA-Search] DOMContentLoaded');
-    console.log('[PA-Search] Fuse (captured):', typeof _Fuse);
-    console.log('[PA-Search] window.Fuse:', typeof window.Fuse);
-
     var wrapper  = document.getElementById('search-wrapper');
     var modal    = document.getElementById('search-modal');
     var inputEl  = document.getElementById('search-query');
@@ -17,13 +13,7 @@
     var showBtnM = document.getElementById('search-button-mobile');
     var hideBtn  = document.getElementById('close-search-button');
 
-    console.log('[PA-Search] wrapper:', !!wrapper, 'input:', !!inputEl,
-                'output:', !!output, 'showBtn:', !!showBtn);
-
-    if (!wrapper || !inputEl || !output || !showBtn) {
-      console.error('[PA-Search] ABORT — required element(s) missing');
-      return;
-    }
+    if (!wrapper || !inputEl || !output || !showBtn) return;
 
     var fuseIndex = null;
     var indexed   = false;
@@ -32,16 +22,11 @@
     function buildIndex() {
       if (indexed) return;
       var base = (wrapper.getAttribute('data-url') || '/').replace(/\/?$/, '/');
-      console.log('[PA-Search] fetching:', base + 'index.json');
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
-        if (xhr.readyState !== 4) return;
-        console.log('[PA-Search] XHR readyState=4, status:', xhr.status);
-        if (xhr.status !== 200) return;
+        if (xhr.readyState !== 4 || xhr.status !== 200) return;
         try {
-          var data = JSON.parse(xhr.responseText);
-          console.log('[PA-Search] index entries:', data.length);
-          fuseIndex = new _Fuse(data, {
+          fuseIndex = new _Fuse(JSON.parse(xhr.responseText), {
             shouldSort:     true,
             ignoreLocation: true,
             threshold:      0.4,
@@ -54,10 +39,7 @@
             ],
           });
           indexed = true;
-          console.log('[PA-Search] Fuse ready');
-        } catch (e) {
-          console.error('[PA-Search] init error:', e);
-        }
+        } catch (e) { /* malformed JSON */ }
       };
       xhr.open('GET', base + 'index.json');
       xhr.send();
@@ -80,11 +62,8 @@
     }
 
     function runSearch(term) {
-      console.log('[PA-Search] runSearch term:', JSON.stringify(term),
-                  'fuseReady:', !!fuseIndex);
       if (!fuseIndex || !term.trim()) { output.innerHTML = ''; return; }
       var hits = fuseIndex.search(term).slice(0, 12);
-      console.log('[PA-Search] hits:', hits.length);
       output.innerHTML = hits.map(function (r) {
         var it = r.item;
         return '<li class="mb-2"><a class="flex items-center px-3 py-2 rounded-md ' +
@@ -117,8 +96,6 @@
       if (e.key === '/' && !open && !isField) { e.preventDefault(); openSearch(); }
       if (e.key === 'Escape' && open) { closeSearch(); }
     });
-
-    console.log('[PA-Search] handlers wired');
   });
 }());
 </script>
