@@ -50,15 +50,9 @@
 
 .dark #mobile-drawer { background-color: rgb(17, 24, 39); }
 
-/* Open state — checkbox sibling selector */
-#mobile-menu-toggle:checked ~ #mobile-backdrop {
-  visibility: visible;
-  opacity: 1;
-}
-
-#mobile-menu-toggle:checked ~ #mobile-drawer {
-  transform: translateX(0);
-}
+/* Open state is driven by JS (see extend-head.html) which reparents
+   the drawer/backdrop to <body> to escape the backdrop-filter
+   containing block on #site-header. */
 
 /* ── Navigation bar ─────────────────────────────────────────────────────── */
 

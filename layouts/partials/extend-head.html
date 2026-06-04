@@ -1,3 +1,55 @@
+{{- /* ── Mobile drawer ─────────────────────────────────────────────────────
+     backdrop-filter on #site-header creates a CSS containing block, trapping
+     position:fixed children inside the navbar height. Move the drawer and
+     backdrop to <body> so they're positioned relative to the viewport.     */ -}}
+<script>
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    var toggle   = document.getElementById('mobile-menu-toggle');
+    var drawer   = document.getElementById('mobile-drawer');
+    var backdrop = document.getElementById('mobile-backdrop');
+    if (!toggle || !drawer || !backdrop) return;
+
+    // Escape the backdrop-filter containing block by reparenting to <body>
+    document.body.appendChild(backdrop);
+    document.body.appendChild(drawer);
+
+    function openDrawer() {
+      drawer.style.transform  = 'translateX(0)';
+      backdrop.style.visibility = 'visible';
+      backdrop.style.opacity    = '1';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.style.transform    = 'translateX(100%)';
+      backdrop.style.visibility = 'hidden';
+      backdrop.style.opacity    = '0';
+      document.body.style.overflow = '';
+      toggle.checked = false;
+    }
+
+    toggle.addEventListener('change', function () {
+      this.checked ? openDrawer() : closeDrawer();
+    });
+
+    // Backdrop tap closes drawer
+    backdrop.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeDrawer();
+    });
+
+    // Close-button labels inside the drawer
+    drawer.querySelectorAll('label[for="mobile-menu-toggle"]').forEach(function (lbl) {
+      lbl.addEventListener('click', function (e) {
+        e.preventDefault();
+        closeDrawer();
+      });
+    });
+  });
+}());
+</script>
+
 {{- if site.Params.enableSearch | default false -}}
 <script src="/js/fuse.min.js"></script>
 <script>
