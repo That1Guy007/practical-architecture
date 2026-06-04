@@ -1,14 +1,31 @@
+/* ── Accent colour: muted antique gold #c9a84c (RGB 201, 168, 76) ────────────
+   Override the slate scheme's cool primary palette site-wide so Blowfish's
+   own Tailwind classes (text-primary-*, border-primary-*, bg-primary-*,
+   hover:text-primary-*, decoration-primary-*) all render in gold/copper.      */
+:root {
+  --color-primary-50:  255, 253, 245;
+  --color-primary-100: 254, 249, 227;
+  --color-primary-200: 250, 238, 186;
+  --color-primary-300: 236, 210, 122;
+  --color-primary-400: 201, 168,  76;   /* main accent — muted antique gold */
+  --color-primary-500: 171, 136,  52;
+  --color-primary-600: 136, 104,  35;
+  --color-primary-700: 100,  75,  22;
+  --color-primary-800:  65,  48,  12;
+  --color-primary-900:  35,  26,   6;
+}
+
 /* ── Navigation bar ─────────────────────────────────────────────────────── */
 
 #site-header {
   background-color: rgba(15, 17, 21, 0.92) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(34, 211, 238, 0.3);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.3);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }
 
-/* Cyan accent line along the top edge */
+/* Gold accent line along the top edge */
 #site-header::before {
   content: "";
   position: absolute;
@@ -17,9 +34,9 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(34, 211, 238, 0.6) 25%,
-    rgba(34, 211, 238, 1) 50%,
-    rgba(34, 211, 238, 0.6) 75%,
+    rgba(201, 168, 76, 0.6) 25%,
+    rgba(201, 168, 76, 1)   50%,
+    rgba(201, 168, 76, 0.6) 75%,
     transparent 100%
   );
   pointer-events: none;
@@ -27,19 +44,16 @@
 
 /* ── Series dropdown menu ────────────────────────────────────────────────── */
 
-/* Override Blowfish's near-transparent dropdown bg (bg-neutral-800/25)
-   with a solid dark panel that clearly lifts off the page */
 .nested-menu .menuhide > div {
   background-color: rgba(10, 12, 16, 0.97) !important;
-  border: 1px solid rgba(34, 211, 238, 0.35) !important;
+  border: 1px solid rgba(201, 168, 76, 0.35) !important;
   box-shadow:
-    0 0 0 1px rgba(34, 211, 238, 0.08),
+    0 0 0 1px rgba(201, 168, 76, 0.08),
     0 8px 32px rgba(0, 0, 0, 0.7) !important;
   backdrop-filter: blur(0) !important;
   -webkit-backdrop-filter: blur(0) !important;
 }
 
-/* Dropdown links — subtle separator line between items */
 .nested-menu .menuhide a {
   padding-bottom: 0.6rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -50,12 +64,12 @@
   border-bottom: none;
 }
 
-/* Nav links — cyan glow on hover */
+/* Nav links — gold glow on hover */
 .main-menu a {
   transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
 .main-menu a:hover {
-  color: #22d3ee !important;
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+  color: #c9a84c !important;
+  text-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
 }
