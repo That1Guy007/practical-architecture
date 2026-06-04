@@ -11,10 +11,10 @@ title      = "Practical Architecture"
   description = "My thoughts today to help tomorrow — deep technical explainers and sharp opinions on the software industry."
 
 [params.author]
-  name     = "Carlos Hernandez - Solution Architect"
+  name     = "Carlos Hernandez"
   # image  = "img/author.jpg"   # add a 400x400px headshot to assets/img/author.jpg then uncomment
   headline = "My thoughts today to help tomorrow"
-  bio      = "I spend a lot of time thinking about how complex systems actually work, and try to demystify security, cloud, architecture, business, and the human and non human factors."
+  bio      = "I enjoy architecting solutions and thinking about how complex systems actually work, and try to demystify security, cloud, architecture, business, and the human and non human factors."
   links = [
     { linkedin = "https://www.linkedin.com/in/compscicarlos/" },
     { github   = "https://github.com/That1Guy007" },
