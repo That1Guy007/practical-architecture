@@ -1,18 +1,20 @@
 [[main]]
-  name    = "Demystified"
-  pageRef = "demystified"
-  weight  = 10
+  name       = "Series"
+  identifier = "series-nav"
+  url        = "/series/"
+  weight     = 10
 
 [[main]]
-  name    = "Penny for a Thought"
-  pageRef = "penny-for-a-thought"
-  weight  = 20
+  name   = "Demystified"
+  parent = "series-nav"
+  url    = "/demystified/"
+  weight = 11
 
 [[main]]
-  identifier = "search"
-  pre        = "search"
-  url        = "/search/"
-  weight     = 90
+  name   = "Penny for a Thought"
+  parent = "series-nav"
+  url    = "/penny-for-a-thought/"
+  weight = 12
 
 [[main]]
   identifier = "linkedin"

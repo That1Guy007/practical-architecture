@@ -1,0 +1,153 @@
+{{ define "main" }}
+
+<header class="mt-5 mb-8">
+  <h1 class="mt-5 text-4xl font-extrabold text-neutral-900 dark:text-neutral">Series</h1>
+  <p class="mt-2 text-neutral-500 dark:text-neutral-400">
+    All content series. Use the tag filter to find posts on a specific topic.
+  </p>
+</header>
+
+{{/* Collect every unique tag from every post across every series */}}
+{{ $allTags := slice }}
+{{ range .Data.Terms.Alphabetical }}
+  {{ range .Pages }}
+    {{ range .Params.tags }}
+      {{ $allTags = $allTags | append . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $uniqueTags := $allTags | uniq | sort }}
+
+{{/* Tag filter bar */}}
+{{ if $uniqueTags }}
+<div class="mb-10">
+  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3">Filter by topic</p>
+  <div class="flex flex-wrap gap-2" id="pa-tag-filters">
+    <button onclick="paFilter(this,'')" data-tag="" class="pa-tag active">All</button>
+    {{ range $uniqueTags }}
+    <button onclick="paFilter(this,'{{ . | urlize }}')" data-tag="{{ . | urlize }}" class="pa-tag">{{ . }}</button>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{/* Series sections */}}
+{{ range .Data.Terms.Alphabetical }}
+{{ if .Pages }}
+<section class="pa-series-section mb-12">
+  <div class="flex items-baseline gap-3 mb-5 pb-2 border-b border-neutral-700">
+    <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral">
+      <a href="{{ .Page.RelPermalink }}" class="hover:text-primary-400 transition-colors">
+        {{ .Page.Title }}
+      </a>
+    </h2>
+    <span class="text-sm text-neutral-500">{{ .Pages | len }}&nbsp;{{ cond (eq (.Pages | len) 1) "post" "posts" }}</span>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {{ range .Pages.ByDate.Reverse }}
+    <article class="pa-post-card" data-tags="{{ range .Params.tags }}{{ . | urlize }} {{ end }}">
+      <a href="{{ .RelPermalink }}" class="block flex-1">
+        <h3 class="pa-post-title">{{ .Title }}</h3>
+        {{ with .Params.description }}
+        <p class="pa-post-desc">{{ . }}</p>
+        {{ end }}
+      </a>
+      {{ if .Params.tags }}
+      <div class="flex flex-wrap gap-1.5 mt-3">
+        {{ range .Params.tags }}
+        <span class="pa-post-tag">{{ . }}</span>
+        {{ end }}
+      </div>
+      {{ end }}
+    </article>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
+{{ end }}
+
+<style>
+  /* Tag filter buttons */
+  .pa-tag {
+    padding: 0.25rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid rgba(115,115,115,0.45);
+    color: rgb(163,163,163);
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .pa-tag:hover {
+    border-color: #22d3ee;
+    color: #22d3ee;
+  }
+  .pa-tag.active {
+    background: #22d3ee;
+    border-color: #22d3ee;
+    color: #0a0a0a;
+    font-weight: 600;
+  }
+
+  /* Post cards */
+  .pa-post-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.1rem 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(64,64,64,0.6);
+    background: rgba(23,23,23,0.45);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .pa-post-card:hover {
+    border-color: rgba(34,211,238,0.45);
+    background: rgba(34,211,238,0.04);
+  }
+  .pa-post-title {
+    font-size: 0.975rem;
+    font-weight: 600;
+    color: rgb(229,229,229);
+    margin-bottom: 0.3rem;
+    transition: color 0.15s;
+  }
+  .pa-post-card:hover .pa-post-title {
+    color: #22d3ee;
+  }
+  .pa-post-desc {
+    font-size: 0.8125rem;
+    color: rgb(115,115,115);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pa-post-tag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(82,82,82,0.55);
+    color: rgb(115,115,115);
+  }
+</style>
+
+<script>
+  function paFilter(btn, tag) {
+    document.querySelectorAll('.pa-tag').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.pa-post-card').forEach(card => {
+      const tags = (card.dataset.tags || '').trim().split(/\s+/).filter(Boolean);
+      card.style.display = (!tag || tags.includes(tag)) ? '' : 'none';
+    });
+
+    document.querySelectorAll('.pa-series-section').forEach(section => {
+      const hasVisible = [...section.querySelectorAll('.pa-post-card')]
+        .some(c => c.style.display !== 'none');
+      section.style.display = hasVisible ? '' : 'none';
+    });
+  }
+</script>
+
+{{ end }}
