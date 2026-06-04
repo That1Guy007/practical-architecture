@@ -1,13 +1,106 @@
+{{- if site.Params.enableSearch | default false -}}
+{{/* Load Fuse.js from static/js — served as-is, never touched by Hugo's bundle pipeline.
+     This guarantees Fuse is available regardless of how Hugo minifies the main bundle. */}}
+<script src="/js/fuse.min.js"></script>
 <script>
-  // Guard the keyup handler: if the user types before index.json finishes
-  // loading, fuse is still undefined — skip the search call instead of throwing.
+(function () {
+  // Run after deferred bundle so all DOM elements exist.
   document.addEventListener('DOMContentLoaded', function () {
-    var searchInput = document.getElementById('search-query');
-    if (!searchInput) return;
-    searchInput.onkeyup = function (event) {
-      if (typeof fuse !== 'undefined' && fuse !== null) {
-        executeQuery(this.value);
-      }
-    };
+    var wrapper  = document.getElementById('search-wrapper');
+    var modal    = document.getElementById('search-modal');
+    var inputEl  = document.getElementById('search-query');
+    var output   = document.getElementById('search-results');
+    var showBtn  = document.getElementById('search-button');
+    var showBtnM = document.getElementById('search-button-mobile');
+    var hideBtn  = document.getElementById('close-search-button');
+
+    if (!wrapper || !inputEl || !output || !showBtn) return;
+
+    var fuseIndex = null;
+    var indexed   = false;
+    var open      = false;
+
+    /* ── Index ─────────────────────────────────────────────────────── */
+    function buildIndex() {
+      if (indexed) return;
+      var base = (wrapper.getAttribute('data-url') || '/').replace(/\/?$/, '/');
+      var xhr  = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4 || xhr.status !== 200) return;
+        try {
+          fuseIndex = new Fuse(JSON.parse(xhr.responseText), {
+            shouldSort:     true,
+            ignoreLocation: true,
+            threshold:      0.4,
+            includeMatches: true,
+            keys: [
+              { name: 'title',   weight: 0.8 },
+              { name: 'section', weight: 0.2 },
+              { name: 'summary', weight: 0.6 },
+              { name: 'content', weight: 0.4 },
+            ],
+          });
+          indexed = true;
+        } catch (e) { /* malformed JSON — leave fuseIndex null */ }
+      };
+      xhr.open('GET', base + 'index.json');
+      xhr.send();
+    }
+
+    /* ── UI ─────────────────────────────────────────────────────────── */
+    function openSearch() {
+      buildIndex();
+      document.body.style.overflow = 'hidden';
+      wrapper.style.visibility = 'visible';
+      inputEl.focus();
+      open = true;
+    }
+
+    function closeSearch() {
+      document.body.style.overflow = '';
+      wrapper.style.visibility = 'hidden';
+      inputEl.value  = '';
+      output.innerHTML = '';
+      open = false;
+    }
+
+    function runSearch(term) {
+      if (!fuseIndex || !term.trim()) { output.innerHTML = ''; return; }
+      var hits = fuseIndex.search(term).slice(0, 12);
+      output.innerHTML = hits.map(function (r) {
+        var it = r.item;
+        return '<li class="mb-2"><a class="flex items-center px-3 py-2 rounded-md ' +
+          'bg-neutral-100 dark:bg-neutral-700 hover:bg-primary-100 ' +
+          'dark:hover:bg-primary-900" href="' + (it.permalink || '#') + '">' +
+          '<div class="grow">' +
+          '<div class="-mb-1 text-lg font-bold">' + (it.title || '') + '</div>' +
+          '<div class="text-sm text-neutral-500 dark:text-neutral-400">' +
+            (it.section || '') +
+            (it.date ? '<span class="px-2 text-primary-500">&middot;</span>' + it.date : '') +
+          '</div>' +
+          '<div class="text-sm italic">' + (it.summary || '') + '</div>' +
+          '</div>' +
+          '<div class="ml-2 ltr:block rtl:hidden text-neutral-500">&rarr;</div>' +
+          '</a></li>';
+      }).join('');
+    }
+
+    /* ── Wire up handlers (overrides whatever the bundle set) ───────── */
+    showBtn.onclick  = function (e) { e.preventDefault(); openSearch(); };
+    if (showBtnM) showBtnM.onclick = function (e) { e.preventDefault(); openSearch(); };
+    hideBtn.onclick  = function (e) { e.preventDefault(); closeSearch(); };
+    wrapper.onclick  = function (e) { if (e.target === wrapper) closeSearch(); };
+    modal.onclick    = function (e) { e.stopPropagation(); };
+    inputEl.onkeyup  = function ()  { runSearch(this.value); };
+
+    document.addEventListener('keydown', function (e) {
+      var tag = document.activeElement ? document.activeElement.tagName : '';
+      var isField = tag === 'INPUT' || tag === 'TEXTAREA' ||
+                    (document.activeElement && document.activeElement.isContentEditable);
+      if (e.key === '/' && !open && !isField) { e.preventDefault(); openSearch(); }
+      if (e.key === 'Escape' && open) { closeSearch(); }
+    });
   });
+}());
 </script>
+{{- end -}}
