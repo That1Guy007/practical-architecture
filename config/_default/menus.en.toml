@@ -17,6 +17,12 @@
   weight = 12
 
 [[main]]
+  name   = "Browse All Posts"
+  parent = "series-nav"
+  url    = "/posts/"
+  weight = 20
+
+[[main]]
   identifier = "linkedin"
   pre        = "linkedin"
   url        = "https://www.linkedin.com/in/compscicarlos/"
