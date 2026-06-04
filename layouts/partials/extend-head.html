@@ -1,11 +1,14 @@
 {{- if site.Params.enableSearch | default false -}}
-{{/* Load Fuse.js from static/js — served as-is, never touched by Hugo's bundle pipeline.
-     This guarantees Fuse is available regardless of how Hugo minifies the main bundle. */}}
 <script src="/js/fuse.min.js"></script>
 <script>
 (function () {
-  // Run after deferred bundle so all DOM elements exist.
+  var _Fuse = window.Fuse; // capture before deferred bundle can overwrite it
+
   document.addEventListener('DOMContentLoaded', function () {
+    console.log('[PA-Search] DOMContentLoaded');
+    console.log('[PA-Search] Fuse (captured):', typeof _Fuse);
+    console.log('[PA-Search] window.Fuse:', typeof window.Fuse);
+
     var wrapper  = document.getElementById('search-wrapper');
     var modal    = document.getElementById('search-modal');
     var inputEl  = document.getElementById('search-query');
@@ -14,21 +17,31 @@
     var showBtnM = document.getElementById('search-button-mobile');
     var hideBtn  = document.getElementById('close-search-button');
 
-    if (!wrapper || !inputEl || !output || !showBtn) return;
+    console.log('[PA-Search] wrapper:', !!wrapper, 'input:', !!inputEl,
+                'output:', !!output, 'showBtn:', !!showBtn);
+
+    if (!wrapper || !inputEl || !output || !showBtn) {
+      console.error('[PA-Search] ABORT — required element(s) missing');
+      return;
+    }
 
     var fuseIndex = null;
     var indexed   = false;
     var open      = false;
 
-    /* ── Index ─────────────────────────────────────────────────────── */
     function buildIndex() {
       if (indexed) return;
       var base = (wrapper.getAttribute('data-url') || '/').replace(/\/?$/, '/');
-      var xhr  = new XMLHttpRequest();
+      console.log('[PA-Search] fetching:', base + 'index.json');
+      var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
-        if (xhr.readyState !== 4 || xhr.status !== 200) return;
+        if (xhr.readyState !== 4) return;
+        console.log('[PA-Search] XHR readyState=4, status:', xhr.status);
+        if (xhr.status !== 200) return;
         try {
-          fuseIndex = new Fuse(JSON.parse(xhr.responseText), {
+          var data = JSON.parse(xhr.responseText);
+          console.log('[PA-Search] index entries:', data.length);
+          fuseIndex = new _Fuse(data, {
             shouldSort:     true,
             ignoreLocation: true,
             threshold:      0.4,
@@ -41,13 +54,15 @@
             ],
           });
           indexed = true;
-        } catch (e) { /* malformed JSON — leave fuseIndex null */ }
+          console.log('[PA-Search] Fuse ready');
+        } catch (e) {
+          console.error('[PA-Search] init error:', e);
+        }
       };
       xhr.open('GET', base + 'index.json');
       xhr.send();
     }
 
-    /* ── UI ─────────────────────────────────────────────────────────── */
     function openSearch() {
       buildIndex();
       document.body.style.overflow = 'hidden';
@@ -59,14 +74,17 @@
     function closeSearch() {
       document.body.style.overflow = '';
       wrapper.style.visibility = 'hidden';
-      inputEl.value  = '';
+      inputEl.value    = '';
       output.innerHTML = '';
       open = false;
     }
 
     function runSearch(term) {
+      console.log('[PA-Search] runSearch term:', JSON.stringify(term),
+                  'fuseReady:', !!fuseIndex);
       if (!fuseIndex || !term.trim()) { output.innerHTML = ''; return; }
       var hits = fuseIndex.search(term).slice(0, 12);
+      console.log('[PA-Search] hits:', hits.length);
       output.innerHTML = hits.map(function (r) {
         var it = r.item;
         return '<li class="mb-2"><a class="flex items-center px-3 py-2 rounded-md ' +
@@ -85,7 +103,6 @@
       }).join('');
     }
 
-    /* ── Wire up handlers (overrides whatever the bundle set) ───────── */
     showBtn.onclick  = function (e) { e.preventDefault(); openSearch(); };
     if (showBtnM) showBtnM.onclick = function (e) { e.preventDefault(); openSearch(); };
     hideBtn.onclick  = function (e) { e.preventDefault(); closeSearch(); };
@@ -100,6 +117,8 @@
       if (e.key === '/' && !open && !isField) { e.preventDefault(); openSearch(); }
       if (e.key === 'Escape' && open) { closeSearch(); }
     });
+
+    console.log('[PA-Search] handlers wired');
   });
 }());
 </script>
