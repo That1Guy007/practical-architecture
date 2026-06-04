@@ -64,6 +64,59 @@
   border-bottom: none;
 }
 
+/* ── details / summary elements in article content ──────────────────────── */
+
+.prose details,
+.dark .prose details {
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 0.4rem;
+  padding: 0.4rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 1rem;
+}
+
+.prose details > summary,
+.dark .prose details > summary {
+  color: rgb(200, 200, 200);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  list-style: none;
+  user-select: none;
+}
+
+.prose details > summary::-webkit-details-marker { display: none; }
+.prose details > summary::marker              { display: none; }
+
+/* Chevron indicator */
+.prose details > summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 0.45rem;
+  font-size: 0.75rem;
+  color: #c9a84c;
+  transition: transform 0.2s ease;
+}
+
+.prose details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.prose details[open] > summary {
+  color: rgb(220, 220, 220);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Card / list summary text ────────────────────────────────────────────── */
+
+/* Lighten the description text on Series and Browse All Posts pages.
+   The pa-post-desc / pa-all-desc inline styles are overridden here so
+   we have one place to adjust the value. */
+.pa-post-desc,
+.pa-all-desc {
+  color: rgb(160, 160, 160) !important;
+}
+
 /* Nav links — gold glow on hover */
 .main-menu a {
   transition: color 0.15s ease, text-shadow 0.15s ease;
