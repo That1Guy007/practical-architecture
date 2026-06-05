@@ -17,6 +17,5 @@ title      = "Practical Architecture"
   bio      = "I enjoy architecting solutions and thinking about how complex systems actually work, and try to demystify security, cloud, architecture, business, and the human and non human factors."
   links = [
     { linkedin = "https://www.linkedin.com/in/compscicarlos/" },
-    { github   = "https://github.com/That1Guy007" },
     { rss      = "/index.xml" },
   ]

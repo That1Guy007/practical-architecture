@@ -28,12 +28,6 @@
   url        = "https://www.linkedin.com/in/compscicarlos/"
   weight     = 100
 
-[[main]]
-  identifier = "github"
-  pre        = "github"
-  url        = "https://github.com/That1Guy007"
-  weight     = 110
-
 [[footer]]
   name    = "Tags"
   pageRef = "tags"
