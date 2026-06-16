@@ -3,7 +3,7 @@ title: "Post-Quantum Cryptography, Demystified. Part 1"
 date: 2026-06-03
 lastmod: 2026-06-03
 draft: false
-description: "Part 1 - Quantum cryptohraphy vs classical cryptography and the path towards adoption."
+description: "Part 1 - Quantum cryptography vs classical cryptography and the path towards adoption."
 summary: "Part 1 - Understanding the current state of PQC, the threats, and how to start to mitigate those risks."
 # series: ["Demystified"]
 series_order: 1
