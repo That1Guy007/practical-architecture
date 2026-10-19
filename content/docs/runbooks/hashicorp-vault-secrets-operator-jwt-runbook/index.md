@@ -3,7 +3,7 @@ title: "HashiCorp Vault Secrets Operator: JWT Authentication and Secret Synchron
 description: "An implementation and troubleshooting runbook for Vault Secrets Operator authentication and Kubernetes secret synchronization using JWT."
 date: 2026-10-18
 lastmod: 2026-10-18
-draft: false
+draft: true
 document_type: "Runbook"
 topics:
   - "Identity and Security"

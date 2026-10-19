@@ -3,7 +3,7 @@ title: "HashiCorp Vault Enterprise on Kubernetes: Deployment and Troubleshooting
 description: "A deployment and troubleshooting runbook for a production-oriented HashiCorp Vault Enterprise cluster on Kubernetes or OpenShift."
 date: 2026-10-18
 lastmod: 2026-10-18
-draft: false
+draft: true
 document_type: "Runbook"
 topics:
   - "Identity and Security"

@@ -3,7 +3,7 @@ title: "Homelab AI Platform"
 description: "A hypothetical project case study for designing a private, observable AI experimentation platform."
 date: 2026-10-18
 lastmod: 2026-10-18
-draft: false
+draft: true
 document_type: "Project"
 layout: "project"
 topics:

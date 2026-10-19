@@ -3,7 +3,7 @@ title: "Deploying a Workload Identity Architecture with SPIFFE/SPIRE"
 description: "An illustrative implementation plan for issuing short-lived workload identities in a Kubernetes environment."
 date: 2026-10-18
 lastmod: 2026-10-18
-draft: false
+draft: true
 document_type: "Guide"
 topics:
   - "Identity and Security"
