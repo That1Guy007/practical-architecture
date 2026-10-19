@@ -1,0 +1,12 @@
+{{- $value := .default -}}
+{{- with .site -}}
+  {{- if isset . $.key -}}
+    {{- $value = index . $.key -}}
+  {{- end -}}
+{{- end -}}
+{{- with .page -}}
+  {{- if isset . $.key -}}
+    {{- $value = index . $.key -}}
+  {{- end -}}
+{{- end -}}
+{{- return $value -}}

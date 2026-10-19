@@ -1,0 +1,26 @@
+{{ $showPagination := partial "resolve-bool.html" (dict "page" .Params "site" .Site.Params.article "key" "showpagination" "default" true) }}
+{{ $invertPagination := partial "resolve-bool.html" (dict "page" .Params "site" .Site.Params.article "key" "invertpagination" "default" false) }}
+{{ if $showPagination }}
+  {{ $next := .NextInSection }}
+  {{ $previous := .PrevInSection }}
+  {{ if $invertPagination }}
+    {{ $next = .PrevInSection }}
+    {{ $previous = .NextInSection }}
+  {{ end }}
+  {{ if or $previous $next }}
+    <nav class="pa-article-pagination" aria-label="More articles">
+      {{ with $previous }}
+        <a class="pa-pagination-link" href="{{ .RelPermalink }}">
+          <span>Previous</span>
+          <strong>{{ .Title }}</strong>
+        </a>
+      {{ end }}
+      {{ with $next }}
+        <a class="pa-pagination-link pa-pagination-next" href="{{ .RelPermalink }}">
+          <span>Next</span>
+          <strong>{{ .Title }}</strong>
+        </a>
+      {{ end }}
+    </nav>
+  {{ end }}
+{{ end }}

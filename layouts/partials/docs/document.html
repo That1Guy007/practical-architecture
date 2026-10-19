@@ -1,0 +1,41 @@
+{{ $page := . }}
+{{ $carbon := $page.Params.carbon | default (dict) }}
+{{ partial "docs/document-header.html" $page }}
+<div class="tl-container tl-document-shell cds--grid cds--grid--full-width">
+  <div class="tl-document-shell__row cds--row">
+    <article class="tl-document-main cds--col-sm-4 cds--col-md-8 cds--col-lg-12" data-technical-document>
+      {{ partial "docs/document-overview.html" $page }}
+
+      {{ if and $page.Params.sample (not $carbon.callout) }}
+        <div class="tl-callout" role="note">
+          <strong>{{ if $page.Params.adr_id }}Illustrative ADR.{{ else }}Illustrative example.{{ end }}</strong>
+          {{ if $page.Params.adr_id }}This is a structural MADR example, not a record of a completed production decision.{{ else }}This document demonstrates the library structure. It does not claim that the described environment was deployed or validated.{{ end }}
+        </div>
+      {{ end }}
+
+      {{ with $page.Params.technologies }}
+        <ul class="tl-tag-list" aria-label="Technologies">
+          {{ range . }}<li><span class="tl-tag">{{ . }}</span></li>{{ end }}
+        </ul>
+      {{ end }}
+
+      {{ if $page.Params.adr_id }}{{ partial "docs/adr-details.html" $page }}{{ end }}
+
+      <div class="tl-prose">
+        {{ $page.Content }}
+      </div>
+
+      {{ with $page.Params.github_url }}
+        <p><a class="tl-button tl-button--secondary" href="{{ . }}" rel="external noopener">View source repository</a></p>
+      {{ end }}
+
+      {{ partial "docs/related.html" $page }}
+    </article>
+
+    <aside class="tl-document-sidebar cds--col-sm-4 cds--col-md-8 cds--col-lg-4" aria-label="Document navigation">
+      {{ $showToc := true }}
+      {{ if isset $page.Params "show_toc" }}{{ $showToc = $page.Params.show_toc }}{{ end }}
+      {{ if $showToc }}{{ partial "docs/toc.html" $page }}{{ end }}
+    </aside>
+  </div>
+</div>

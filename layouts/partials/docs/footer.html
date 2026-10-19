@@ -1,0 +1,10 @@
+<footer class="tl-site-footer">
+  <div class="tl-container tl-site-footer__inner">
+    <p>&copy; {{ now.Format "2006" }} {{ site.Params.Author.name }}. Technical notes, decisions, and implementation patterns.</p>
+    <nav aria-label="Technical Library footer navigation">
+      <a href="{{ "docs/" | relLangURL }}">Library</a>
+      <a href="{{ "posts/" | relLangURL }}">Blog</a>
+      <a href="{{ site.Home.RelPermalink }}">Home</a>
+    </nav>
+  </div>
+</footer>

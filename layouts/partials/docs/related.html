@@ -1,0 +1,18 @@
+{{ with .Params.related_docs }}
+  {{ $resolved := slice }}
+  {{ range . }}
+    {{ with site.GetPage . }}
+      {{ $resolved = $resolved | append . }}
+    {{ end }}
+  {{ end }}
+  {{ if gt (len $resolved) 0 }}
+    <aside class="tl-related" aria-labelledby="related-documents-title">
+      <h2 id="related-documents-title">Related documentation</h2>
+      <ul class="tl-related-list">
+        {{ range $resolved }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{ end }}
+      </ul>
+    </aside>
+  {{ end }}
+{{ end }}

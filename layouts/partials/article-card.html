@@ -1,0 +1,61 @@
+{{- $page := . -}}
+{{- $headingLevel := 2 -}}
+{{- $showSection := false -}}
+{{- $filterable := false -}}
+{{- $filterTags := "" -}}
+{{- $columnClass := "cds--col-sm-4 cds--col-md-4 cds--col-lg-8" -}}
+
+{{- if reflect.IsMap . -}}
+  {{- $page = .page -}}
+  {{- with .headingLevel }}{{ $headingLevel = . }}{{ end -}}
+  {{- with .showSection }}{{ $showSection = . }}{{ end -}}
+  {{- with .filterable }}{{ $filterable = . }}{{ end -}}
+  {{- with .filterTags }}{{ $filterTags = . }}{{ end -}}
+  {{- with .columnClass }}{{ $columnClass = . }}{{ end -}}
+{{- end -}}
+
+{{- $href := $page.RelPermalink -}}
+{{- with $page.Params.externalUrl }}{{ $href = . }}{{ end -}}
+{{- $summary := $page.Params.description | default $page.Summary | plainify | strings.TrimSpace -}}
+{{- $showSummary := partial "resolve-bool.html" (dict "page" $page.Params "site" $page.Site.Params.list "key" "showsummary" "default" true) -}}
+
+<li
+  class="{{ $columnClass }} pa-card-grid__item"
+  {{ if $filterable }}data-series-card data-tags="{{ $filterTags }}"{{ end }}>
+  <cds-clickable-tile href="{{ $href | safeURL }}" class="pa-article-card">
+    <article class="pa-article-card__content">
+      {{ if $page.Draft }}
+        <p class="pa-article-card__state">Draft</p>
+      {{ end }}
+
+      {{ if eq $headingLevel 3 }}
+        <h3 class="pa-article-card__title">{{ $page.Title | emojify }}</h3>
+      {{ else }}
+        <h2 class="pa-article-card__title">{{ $page.Title | emojify }}</h2>
+      {{ end }}
+
+      {{ if $showSummary }}
+        {{ with $summary }}
+          <p class="pa-article-card__description">{{ . }}</p>
+        {{ end }}
+      {{ end }}
+
+      <div class="pa-article-card__meta">
+        {{ if $showSection }}
+          <span class="pa-article-card__section">{{ $page.Section | humanize }}</span>
+        {{ end }}
+        {{ with $page.Date }}
+          <time datetime="{{ .Format "2006-01-02" }}">{{ . | time.Format "2 January 2006" }}</time>
+        {{ end }}
+      </div>
+
+      {{ with $page.Params.tags }}
+        <ul class="pa-article-card__tags" aria-label="Topics">
+          {{ range . }}
+            <li><cds-tag>{{ . }}</cds-tag></li>
+          {{ end }}
+        </ul>
+      {{ end }}
+    </article>
+  </cds-clickable-tile>
+</li>

@@ -1,153 +1,122 @@
 {{ define "main" }}
+  {{ .Scratch.Set "scope" "terms" }}
+  {{ $showBreadcrumbs := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.taxonomy "key" "showbreadcrumbs" "default" false) }}
 
-<header class="mt-5 mb-8">
-  <h1 class="mt-5 text-4xl font-extrabold text-neutral-900 dark:text-neutral">Series</h1>
-  <p class="mt-2 text-neutral-500 dark:text-neutral-400">
-    All content series. Use the tag filter to find posts on a specific topic.
-  </p>
-</header>
+  {{ partial "page-header.html" (dict
+    "context" .
+    "title" "Series"
+    "description" "All content series. Filter the collection by topic."
+    "showBreadcrumbs" $showBreadcrumbs
+  ) }}
 
-{{/* Collect every unique tag from every post across every series */}}
-{{ $allTags := slice }}
-{{ range .Data.Terms.Alphabetical }}
-  {{ range .Pages }}
-    {{ range .Params.tags }}
-      {{ $allTags = $allTags | append . }}
+  {{ $allTags := slice }}
+  {{ $postCount := 0 }}
+  {{ $seriesCount := 0 }}
+  {{ range .Data.Terms.Alphabetical }}
+    {{ if .Pages }}
+      {{ $seriesCount = add $seriesCount 1 }}
+      {{ $postCount = add $postCount (len .Pages) }}
+      {{ range .Pages }}
+        {{ range .Params.tags }}
+          {{ $allTags = $allTags | append . }}
+        {{ end }}
+      {{ end }}
     {{ end }}
   {{ end }}
-{{ end }}
-{{ $uniqueTags := $allTags | uniq | sort }}
+  {{ $uniqueTags := $allTags | uniq | sort }}
 
-{{/* Tag filter bar */}}
-{{ if $uniqueTags }}
-<div class="mb-10">
-  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3">Filter by topic</p>
-  <div class="flex flex-wrap gap-2" id="pa-tag-filters">
-    <button onclick="paFilter(this,'')" data-tag="" class="pa-tag active">All</button>
-    {{ range $uniqueTags }}
-    <button onclick="paFilter(this,'{{ . | urlize }}')" data-tag="{{ . | urlize }}" class="pa-tag">{{ . }}</button>
-    {{ end }}
-  </div>
-</div>
-{{ end }}
+  {{ if gt $seriesCount 0 }}
+    <div class="pa-series-browser" data-series-filter>
+      {{ if $uniqueTags }}
+        <section class="cds--grid pa-filter-panel" aria-labelledby="pa-series-filter-heading">
+          <div class="cds--row">
+            <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+              <h2 id="pa-series-filter-heading" class="pa-filter-panel__heading">Filter by topic</h2>
+              <div class="pa-filter-panel__controls" role="group" aria-labelledby="pa-series-filter-heading">
+                <button
+                  type="button"
+                  class="pa-filter-button"
+                  data-series-filter-button
+                  data-tag=""
+                  data-tag-label="All topics"
+                  aria-controls="pa-series-results"
+                  aria-pressed="true">
+                  All
+                </button>
+                {{ range $uniqueTags }}
+                  <button
+                    type="button"
+                    class="pa-filter-button"
+                    data-series-filter-button
+                    data-tag="{{ . | urlize }}"
+                    data-tag-label="{{ . }}"
+                    aria-controls="pa-series-results"
+                    aria-pressed="false">
+                    {{ . }}
+                  </button>
+                {{ end }}
+              </div>
+              <p
+                id="pa-series-filter-status"
+                class="pa-filter-panel__status"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true">
+                {{ $postCount }} {{ cond (eq $postCount 1) "article" "articles" }} across {{ $seriesCount }} {{ cond (eq $seriesCount 1) "series" "series" }}.
+              </p>
+            </div>
+          </div>
+        </section>
+      {{ end }}
 
-{{/* Series sections */}}
-{{ range .Data.Terms.Alphabetical }}
-{{ if .Pages }}
-<section class="pa-series-section mb-12">
-  <div class="flex items-baseline gap-3 mb-5 pb-2 border-b border-neutral-700">
-    <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral">
-      <a href="{{ .Page.RelPermalink }}" class="hover:text-primary-400 transition-colors">
-        {{ .Page.Title }}
-      </a>
-    </h2>
-    <span class="text-sm text-neutral-500">{{ .Pages | len }}&nbsp;{{ cond (eq (.Pages | len) 1) "post" "posts" }}</span>
-  </div>
+      <div id="pa-series-results" class="pa-series-results">
+        {{ range .Data.Terms.Alphabetical }}
+          {{ if .Pages }}
+            {{ $sectionID := printf "pa-series-%s" (.Page.Title | urlize) }}
+            <section class="pa-series-section" data-series-section aria-labelledby="{{ $sectionID }}">
+              <div class="cds--grid pa-series-section__header-grid">
+                <div class="cds--row">
+                  <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+                    <header class="pa-series-section__header">
+                      <h2 id="{{ $sectionID }}" class="pa-series-section__title">
+                        <a href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a>
+                      </h2>
+                      <p class="pa-series-section__count">
+                        {{ len .Pages }} {{ cond (eq (len .Pages) 1) "article" "articles" }}
+                      </p>
+                    </header>
+                  </div>
+                </div>
+              </div>
 
-  <div class="grid gap-4 sm:grid-cols-2">
-    {{ range .Pages.ByDate.Reverse }}
-    <article class="pa-post-card" data-tags="{{ range .Params.tags }}{{ . | urlize }} {{ end }}">
-      <a href="{{ .RelPermalink }}" class="block flex-1">
-        <h3 class="pa-post-title">{{ .Title }}</h3>
-        {{ with .Params.description }}
-        <p class="pa-post-desc">{{ . }}</p>
-        {{ end }}
-      </a>
-      {{ if .Params.tags }}
-      <div class="flex flex-wrap gap-1.5 mt-3">
-        {{ range .Params.tags }}
-        <span class="pa-post-tag">{{ . }}</span>
+              <div class="cds--grid cds--grid--narrow pa-card-grid">
+                <ul class="cds--row pa-card-grid__row">
+                  {{ range .Pages.ByDate.Reverse }}
+                    {{ $tagSlugs := slice }}
+                    {{ range .Params.tags }}
+                      {{ $tagSlugs = $tagSlugs | append (. | urlize) }}
+                    {{ end }}
+                    {{ partial "article-card.html" (dict
+                      "page" .
+                      "headingLevel" 3
+                      "filterable" true
+                      "filterTags" (delimit $tagSlugs " ")
+                    ) }}
+                  {{ end }}
+                </ul>
+              </div>
+            </section>
+          {{ end }}
         {{ end }}
       </div>
-      {{ end }}
-    </article>
-    {{ end }}
-  </div>
-</section>
-{{ end }}
-{{ end }}
-
-<style>
-  /* Tag filter buttons */
-  .pa-tag {
-    padding: 0.25rem 0.85rem;
-    border-radius: 9999px;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    border: 1px solid rgba(115,115,115,0.45);
-    color: rgb(163,163,163);
-    background: transparent;
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s, background 0.15s;
-  }
-  .pa-tag:hover {
-    border-color: #c9a84c;
-    color: #c9a84c;
-  }
-  .pa-tag.active {
-    background: #c9a84c;
-    border-color: #c9a84c;
-    color: #0a0a0a;
-    font-weight: 600;
-  }
-
-  /* Post cards */
-  .pa-post-card {
-    display: flex;
-    flex-direction: column;
-    padding: 1.1rem 1.25rem;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(64,64,64,0.6);
-    background: rgba(23,23,23,0.45);
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .pa-post-card:hover {
-    border-color: rgba(34,211,238,0.45);
-    background: rgba(34,211,238,0.04);
-  }
-  .pa-post-title {
-    font-size: 0.975rem;
-    font-weight: 600;
-    color: rgb(229,229,229);
-    margin-bottom: 0.3rem;
-    transition: color 0.15s;
-  }
-  .pa-post-card:hover .pa-post-title {
-    color: #c9a84c;
-  }
-  .pa-post-desc {
-    font-size: 0.8125rem;
-    color: rgb(115,115,115);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .pa-post-tag {
-    font-size: 0.7rem;
-    padding: 0.15rem 0.55rem;
-    border-radius: 9999px;
-    border: 1px solid rgba(82,82,82,0.55);
-    color: rgb(115,115,115);
-  }
-</style>
-
-<script>
-  function paFilter(btn, tag) {
-    document.querySelectorAll('.pa-tag').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    document.querySelectorAll('.pa-post-card').forEach(card => {
-      const tags = (card.dataset.tags || '').trim().split(/\s+/).filter(Boolean);
-      card.style.display = (!tag || tags.includes(tag)) ? '' : 'none';
-    });
-
-    document.querySelectorAll('.pa-series-section').forEach(section => {
-      const hasVisible = [...section.querySelectorAll('.pa-post-card')]
-        .some(c => c.style.display !== 'none');
-      section.style.display = hasVisible ? '' : 'none';
-    });
-  }
-</script>
-
+    </div>
+  {{ else }}
+    <div class="cds--grid pa-empty-state">
+      <div class="cds--row">
+        <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+          <p>No series are available yet.</p>
+        </div>
+      </div>
+    </div>
+  {{ end }}
 {{ end }}

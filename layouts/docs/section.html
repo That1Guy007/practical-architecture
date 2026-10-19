@@ -1,0 +1,17 @@
+{{ define "main" }}
+  <header class="tl-page-heading">
+    <div class="tl-container">
+      {{ partial "docs/breadcrumbs.html" . }}
+      <p class="tl-eyebrow">Technical Library / Collection</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p class="tl-page-heading__description">{{ . }}</p>{{ end }}
+    </div>
+  </header>
+
+  <section class="tl-section">
+    <div class="tl-container">
+      {{ with .Content }}<div class="tl-prose">{{ . }}</div>{{ end }}
+      {{ partial "docs/catalog.html" (dict "pages" .RegularPagesRecursive "headingLevel" 2) }}
+    </div>
+  </section>
+{{ end }}

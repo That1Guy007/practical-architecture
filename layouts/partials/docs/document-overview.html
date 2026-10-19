@@ -1,0 +1,19 @@
+{{ $headings := .Fragments.Headings }}
+{{ $topLevel := slice }}
+{{ if gt (len $headings) 0 }}{{ $rootHeading := index $headings 0 }}{{ $topLevel = $rootHeading.Headings }}{{ end }}
+{{ if gt (len $topLevel) 1 }}
+  <nav class="tl-document-overview" aria-label="Document overview">
+    <p class="tl-eyebrow">Document overview</p>
+    <ul class="tl-document-overview__list">
+      {{ range $index, $heading := $topLevel }}
+        <li>
+          <a class="tl-document-overview__tile" href="#{{ $heading.ID }}">
+            <span class="tl-document-overview__number">{{ printf "%02d" (add $index 1) }}</span>
+            <span class="tl-document-overview__title">{{ $heading.Title | plainify }}</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      {{ end }}
+    </ul>
+  </nav>
+{{ end }}

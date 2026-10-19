@@ -1,0 +1,20 @@
+{{ $sharingLinks := .Site.Params.article.sharingLinks }}
+{{ if isset .Params "sharinglinks" }}{{ $sharingLinks = .Params.sharingLinks }}{{ end }}
+{{ with $sharingLinks }}
+  {{ $links := hugo.Data.sharing }}
+  <section class="pa-sharing" aria-labelledby="share-title">
+    <h2 id="share-title">Share this article</h2>
+    <ul>
+      {{ range . }}
+        {{ with index $links . }}
+          <li>
+            <a target="_blank" rel="noopener noreferrer" href="{{ printf .url $.Permalink $.Title | safeURL }}">
+              {{ i18n .title | default (.title | humanize) }}
+              <span class="pa-visually-hidden"> (opens in a new tab)</span>
+            </a>
+          </li>
+        {{ end }}
+      {{ end }}
+    </ul>
+  </section>
+{{ end }}

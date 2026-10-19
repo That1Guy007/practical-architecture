@@ -1,0 +1,81 @@
+{{ $page := . }}
+{{ $documentType := $page.Params.document_type | default ($page.Section | humanize) }}
+{{ $carbon := $page.Params.carbon | default (dict) }}
+{{ $defaultEyebrow := $documentType }}
+{{ with $page.Params.adr_id }}{{ $defaultEyebrow = printf "%s / %s" $defaultEyebrow . }}{{ end }}
+{{ $eyebrow := $carbon.eyebrow | default $defaultEyebrow }}
+<header class="tl-document-header">
+  <div class="tl-container tl-document-header__grid cds--grid cds--grid--full-width">
+    <div class="cds--row">
+      <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+        {{ partial "docs/breadcrumbs.html" $page }}
+        <p class="tl-eyebrow">{{ $eyebrow }}</p>
+        <h1>{{ $page.Title | emojify }}</h1>
+        {{ with $page.Description }}<p class="tl-document-header__description">{{ . }}</p>{{ end }}
+        {{ with $carbon.lead }}<p class="tl-document-hero__lead">{{ . }}</p>{{ end }}
+
+        <dl class="tl-document-meta">
+          <div class="tl-document-meta__item">
+            <dt>Created</dt>
+            <dd><time datetime="{{ $page.Date.Format `2006-01-02` }}">{{ $page.Date.Format "2 Jan 2006" }}</time></dd>
+          </div>
+          <div class="tl-document-meta__item">
+            <dt>Updated</dt>
+            <dd><time datetime="{{ $page.Lastmod.Format `2006-01-02` }}">{{ $page.Lastmod.Format "2 Jan 2006" }}</time></dd>
+          </div>
+          {{ with $page.Params.status }}
+            <div class="tl-document-meta__item">
+              <dt>Status</dt>
+              <dd class="tl-status--{{ . | urlize }}">{{ . }}</dd>
+            </div>
+          {{ end }}
+          {{ with $page.Params.version }}
+            <div class="tl-document-meta__item">
+              <dt>Version</dt>
+              <dd>{{ . }}</dd>
+            </div>
+          {{ end }}
+          {{ if $page.Params.sample }}
+            <div class="tl-document-meta__item">
+              <dt>Content note</dt>
+              <dd>Illustrative sample</dd>
+            </div>
+          {{ end }}
+          {{ with $carbon.meta }}
+            {{ range . }}
+              {{ if and .label .value }}
+                <div class="tl-document-meta__item">
+                  <dt>{{ .label }}</dt>
+                  <dd>{{ .value }}</dd>
+                </div>
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        </dl>
+
+        {{ with $carbon.callout }}
+          {{ $kind := .kind | default "info" | lower }}
+          {{ if eq $kind "note" }}{{ $kind = "info" }}{{ end }}
+          {{ if eq $kind "danger" }}{{ $kind = "error" }}{{ end }}
+          {{ if not (in (slice "info" "success" "warning" "error") $kind) }}{{ $kind = "info" }}{{ end }}
+          {{ $calloutID := printf "document-callout-%s" ($page.File.UniqueID | default ($page.RelPermalink | anchorize)) }}
+          <aside class="tl-callout tl-callout--{{ $kind }} tl-document-hero__callout" role="note" aria-labelledby="{{ $calloutID }}" data-kind="{{ $kind }}">
+            <p class="tl-callout__title" id="{{ $calloutID }}">{{ .title | default "Note" }}</p>
+            {{ with .text }}<div class="tl-callout__body">{{ $page.RenderString (dict "display" "block") . }}</div>{{ end }}
+          </aside>
+        {{ end }}
+
+        {{ with $carbon.button }}
+          {{ if and .label .href }}
+            {{ $href := printf "%v" .href }}
+            {{ $external := or (hasPrefix $href "http://") (hasPrefix $href "https://") }}
+            {{ if and (not $external) (not (hasPrefix $href "#")) }}
+              {{ $href = strings.TrimPrefix "/" $href | relLangURL }}
+            {{ end }}
+            <a class="tl-button tl-document-hero__button" href="{{ $href }}"{{ if $external }} rel="external noopener"{{ end }}>{{ .label }} <span aria-hidden="true">&rarr;</span></a>
+          {{ end }}
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</header>

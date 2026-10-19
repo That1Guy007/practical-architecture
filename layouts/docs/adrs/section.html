@@ -1,0 +1,47 @@
+{{ define "main" }}
+  <header class="tl-page-heading">
+    <div class="tl-container">
+      {{ partial "docs/breadcrumbs.html" . }}
+      <p class="tl-eyebrow">Technical Library / Decision records</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p class="tl-page-heading__description">{{ . }}</p>{{ end }}
+    </div>
+  </header>
+
+  <section class="tl-section">
+    <div class="tl-container">
+      {{ with .Content }}<div class="tl-prose">{{ . }}</div>{{ end }}
+      {{ $records := sort .RegularPages "Params.adr_id" "asc" }}
+      {{ if gt (len $records) 0 }}
+        <div class="tl-table-scroll">
+          <table class="tl-adr-table">
+            <caption>Architecture Decision Records, ordered by identifier</caption>
+            <thead>
+              <tr>
+                <th scope="col">ADR</th>
+                <th scope="col">Title</th>
+                <th scope="col">Status</th>
+                <th scope="col">Decision date</th>
+                <th scope="col">Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{ range $records }}
+                <tr>
+                  <td class="tl-adr-id">{{ .Params.adr_id | default "Unnumbered" }}</td>
+                  <td><a href="{{ .RelPermalink }}">{{ .Title }}</a></td>
+                  <td class="tl-status--{{ .Params.status | default `Proposed` | urlize }}">{{ .Params.status | default "Proposed" }}</td>
+                  {{ $decisionDate := .Params.decision_date | default (.Date.Format "2006-01-02") }}
+                  <td><time datetime="{{ $decisionDate }}">{{ $decisionDate }}</time></td>
+                  <td>{{ .Params.category | default "Uncategorized" }}</td>
+                </tr>
+              {{ end }}
+            </tbody>
+          </table>
+        </div>
+      {{ else }}
+        <div class="tl-empty-state tl-empty-state--visible"><p>No ADRs have been published yet.</p></div>
+      {{ end }}
+    </div>
+  </section>
+{{ end }}

@@ -1,0 +1,59 @@
+{{ $showCopyright := partial "resolve-bool.html" (dict "page" .Params "site" .Site.Params.footer "key" "showcopyright" "default" true) }}
+{{ $showAttribution := partial "resolve-bool.html" (dict "page" .Params "site" .Site.Params.footer "key" "showthemeattribution" "default" true) }}
+{{ $showScrollToTop := partial "resolve-bool.html" (dict "page" .Params "site" .Site.Params.footer "key" "showscrolltotop" "default" false) }}
+<footer id="site-footer" class="pa-footer">
+  <section class="cds--grid pa-footer-newsletter" aria-labelledby="newsletter-title">
+    <div class="cds--row">
+      <div class="cds--col-sm-4 cds--col-md-6 cds--col-lg-8">
+        <p class="pa-eyebrow">New thinking, occasionally</p>
+        <h2 id="newsletter-title">Stay in the loop</h2>
+        <p id="newsletter-help">New posts delivered to your inbox. No spam; unsubscribe any time.</p>
+        <form
+          class="pa-newsletter-form"
+          action="https://buttondown.com/api/emails/embed-subscribe/That1guy"
+          method="post"
+          target="_blank">
+          <div class="pa-field">
+            <label for="newsletter-email">Email address</label>
+            <input
+              id="newsletter-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              aria-describedby="newsletter-help"
+              placeholder="you@example.com"
+              required>
+          </div>
+          <input type="hidden" value="1" name="embed">
+          <button class="pa-native-button" type="submit">
+            Subscribe<span class="pa-visually-hidden"> (opens in a new tab)</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div class="cds--grid pa-footer-meta">
+    <div class="cds--row">
+      <div class="cds--col-sm-4 cds--col-md-4 cds--col-lg-8">
+        {{ with .Site.Menus.footer }}
+          <nav aria-label="Footer navigation">
+            <ul class="pa-footer-links">
+              {{ range . }}<li><a href="{{ .URL }}">{{ .Name }}</a></li>{{ end }}
+            </ul>
+          </nav>
+        {{ end }}
+      </div>
+      <div class="cds--col-sm-4 cds--col-md-4 cds--col-lg-8 pa-footer-credit">
+        {{ if $showCopyright }}<p>&copy; {{ now.Format "2006" }} {{ .Site.Params.Author.name }}.</p>{{ end }}
+        {{ if $showAttribution }}
+          <p>
+            Built with <a href="https://gohugo.io/">Hugo</a> and
+            <a href="https://carbondesignsystem.com/">Carbon Design System</a>.
+          </p>
+        {{ end }}
+        {{ if $showScrollToTop }}<a class="pa-back-to-top" href="#main-content">Back to top</a>{{ end }}
+      </div>
+    </div>
+  </div>
+</footer>

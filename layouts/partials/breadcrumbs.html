@@ -1,0 +1,17 @@
+{{ if not .IsHome }}
+  <cds-breadcrumb aria-label="Breadcrumb">
+    <cds-breadcrumb-item>
+      <cds-breadcrumb-link href="{{ .Site.Home.RelPermalink }}">Home</cds-breadcrumb-link>
+    </cds-breadcrumb-item>
+    {{ range .Ancestors.Reverse }}
+      {{ if not .IsHome }}
+        <cds-breadcrumb-item>
+          <cds-breadcrumb-link href="{{ .RelPermalink }}">{{ .LinkTitle }}</cds-breadcrumb-link>
+        </cds-breadcrumb-item>
+      {{ end }}
+    {{ end }}
+    <cds-breadcrumb-item>
+      <cds-breadcrumb-link is-currentpage>{{ .LinkTitle }}</cds-breadcrumb-link>
+    </cds-breadcrumb-item>
+  </cds-breadcrumb>
+{{ end }}

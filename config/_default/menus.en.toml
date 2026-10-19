@@ -1,26 +1,31 @@
 [[main]]
   name       = "Series"
   identifier = "series-nav"
-  url        = "/series/"
+  pageRef    = "/series"
   weight     = 10
 
 [[main]]
   name   = "Demystified"
   parent = "series-nav"
-  url    = "/demystified/"
+  pageRef = "/demystified"
   weight = 11
 
 [[main]]
   name   = "Penny for a Thought"
   parent = "series-nav"
-  url    = "/penny-for-a-thought/"
+  pageRef = "/penny-for-a-thought"
   weight = 12
 
 [[main]]
   name   = "Browse All Posts"
   parent = "series-nav"
-  url    = "/posts/"
+  pageRef = "/posts"
   weight = 20
+
+[[main]]
+  name     = "Technical Library"
+  pageRef  = "/docs"
+  weight   = 30
 
 [[main]]
   identifier = "linkedin"

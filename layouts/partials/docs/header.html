@@ -1,0 +1,17 @@
+{{ $libraryURL := "docs/" | relLangURL }}
+{{ $postsURL := "posts/" | relLangURL }}
+<header class="tl-site-header">
+  <div class="tl-container tl-site-header__inner">
+    <a class="tl-brand" href="{{ $libraryURL }}" aria-label="Technical Library home">
+      <span class="tl-brand__mark" aria-hidden="true">PA</span>
+      <span>Technical Library</span>
+    </a>
+
+    <nav class="tl-site-nav" aria-label="Technical Library navigation">
+      <a href="{{ $libraryURL }}"{{ if eq .RelPermalink $libraryURL }} aria-current="page"{{ end }}>Library</a>
+      <a href="{{ $postsURL }}">Browse blog</a>
+      <a href="{{ site.Home.RelPermalink }}">Main site</a>
+      <button class="tl-theme-toggle" type="button" data-theme-toggle>Theme: System</button>
+    </nav>
+  </div>
+</header>

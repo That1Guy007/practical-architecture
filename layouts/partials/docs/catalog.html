@@ -1,0 +1,104 @@
+{{ $pages := .pages }}
+{{ $headingLevel := .headingLevel | default 2 }}
+{{ $types := slice }}
+{{ $technologies := slice }}
+{{ $topics := slice }}
+{{ range $pages }}
+  {{ with .Params.document_type }}{{ $types = $types | append . }}{{ end }}
+  {{ range .Params.technologies }}{{ $technologies = $technologies | append . }}{{ end }}
+  {{ range .Params.topics }}{{ $topics = $topics | append . }}{{ end }}
+{{ end }}
+{{ $types = $types | uniq | sort }}
+{{ $technologies = $technologies | uniq | sort }}
+{{ $topics = $topics | uniq | sort }}
+
+<div class="tl-catalog" id="library-catalog" data-library-catalog>
+  {{ if gt (len $pages) 0 }}
+    <div class="tl-filter-panel">
+      <form class="tl-filter-form" data-library-filters role="search">
+        <div class="tl-field">
+          <label for="library-search">Search this catalog</label>
+          <input
+            id="library-search"
+            type="search"
+            inputmode="search"
+            autocomplete="off"
+            placeholder="Search titles, descriptions, and tags"
+            data-filter-search>
+        </div>
+        <div class="tl-field">
+          <label for="library-type">Document type</label>
+          <select id="library-type" data-filter-type>
+            <option value="">All document types</option>
+            {{ range $types }}<option value="{{ . | urlize }}">{{ . }}</option>{{ end }}
+          </select>
+        </div>
+        <div class="tl-field">
+          <label for="library-discovery">Technology or topic</label>
+          <select id="library-discovery" data-filter-discovery>
+            <option value="">All technologies and topics</option>
+            {{ if gt (len $technologies) 0 }}
+              <optgroup label="Technologies">
+                {{ range $technologies }}<option value="technology:{{ . | urlize }}">{{ . }}</option>{{ end }}
+              </optgroup>
+            {{ end }}
+            {{ if gt (len $topics) 0 }}
+              <optgroup label="Topics">
+                {{ range $topics }}<option value="topic:{{ . | urlize }}">{{ . }}</option>{{ end }}
+              </optgroup>
+            {{ end }}
+          </select>
+        </div>
+        <button class="tl-button tl-button--secondary" type="button" data-filter-reset>Clear</button>
+      </form>
+      <div class="tl-filter-summary">
+        <p data-results-count role="status" aria-live="polite">{{ len $pages }} documents shown</p>
+        <noscript>Filtering requires JavaScript; every document remains listed below.</noscript>
+      </div>
+    </div>
+
+    <ul class="tl-catalog-grid" aria-label="Technical documents">
+      {{ range (sort $pages "Lastmod" "desc") }}
+        {{ $page := . }}
+        {{ $documentType := $page.Params.document_type | default ($page.Section | humanize) }}
+        {{ $documentURL := $page.RelPermalink }}
+        {{ $searchTerms := slice $page.Title $page.Description $documentType $page.Params.status }}
+        {{ range $page.Params.technologies }}{{ $searchTerms = $searchTerms | append . }}{{ end }}
+        {{ range $page.Params.topics }}{{ $searchTerms = $searchTerms | append . }}{{ end }}
+        {{ range $page.Params.tags }}{{ $searchTerms = $searchTerms | append . }}{{ end }}
+        <li
+          class="tl-catalog-item"
+          data-library-card
+          data-type="{{ $documentType | urlize }}"
+          data-search="{{ delimit $searchTerms ` ` }}"
+          data-technologies="{{ range $index, $value := $page.Params.technologies }}{{ if $index }}|{{ end }}{{ $value | urlize }}{{ end }}"
+          data-topics="{{ range $index, $value := $page.Params.topics }}{{ if $index }}|{{ end }}{{ $value | urlize }}{{ end }}">
+          <article class="tl-document-card">
+            <div class="tl-document-card__top">
+              <span class="tl-document-card__type">{{ $documentType }}</span>
+              {{ if $page.Params.sample }}<span class="tl-badge tl-badge--sample">Sample</span>{{ end }}
+            </div>
+            <h{{ $headingLevel }}><a href="{{ $documentURL }}">{{ $page.Title }}</a></h{{ $headingLevel }}>
+            {{ with $page.Description | default $page.Summary }}
+              <p class="tl-document-card__description">{{ . | plainify | strings.TrimSpace }}</p>
+            {{ end }}
+            {{ with $page.Params.technologies }}
+              <ul class="tl-tag-list" aria-label="Technologies">
+                {{ range first 4 . }}<li><span class="tl-tag">{{ . }}</span></li>{{ end }}
+              </ul>
+            {{ end }}
+            <div class="tl-document-card__footer">
+              <time datetime="{{ $page.Lastmod.Format `2006-01-02` }}">Updated {{ $page.Lastmod.Format "2 Jan 2006" }}</time>
+              {{ with $page.Params.status }}<span class="tl-status--{{ . | urlize }}">{{ . }}</span>{{ end }}
+            </div>
+          </article>
+        </li>
+      {{ end }}
+    </ul>
+    <p class="tl-empty-filter">No documents match those filters. Clear the filters or try a broader search.</p>
+  {{ else }}
+    <div class="tl-empty-state tl-empty-state--visible">
+      <p>No documents have been published in this collection yet.</p>
+    </div>
+  {{ end }}
+</div>

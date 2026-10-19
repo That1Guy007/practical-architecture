@@ -1,0 +1,23 @@
+{{ $showDate := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.article "key" "showdate" "default" true) }}
+{{ $showDateUpdated := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.article "key" "showdateupdated" "default" true) }}
+{{ $showReadingTime := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.article "key" "showreadingtime" "default" true) }}
+{{ $showWordCount := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.article "key" "showwordcount" "default" true) }}
+{{ $showAuthor := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.article "key" "showauthor" "default" true) }}
+
+<ul class="pa-article-meta" aria-label="Article details">
+  {{ if $showDate }}
+    <li><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format (site.Language.Params.dateFormat | default "2 January 2006") }}</time></li>
+  {{ end }}
+  {{ if and $showDateUpdated (ne .Lastmod .Date) }}
+    <li>Updated <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod | time.Format (site.Language.Params.dateFormat | default "2 January 2006") }}</time></li>
+  {{ end }}
+  {{ if $showReadingTime }}
+    <li>{{ .ReadingTime }} min read</li>
+  {{ end }}
+  {{ if $showWordCount }}
+    <li>{{ .WordCount }} words</li>
+  {{ end }}
+  {{ if $showAuthor }}
+    {{ with site.Params.Author.name }}<li>By {{ . }}</li>{{ end }}
+  {{ end }}
+</ul>

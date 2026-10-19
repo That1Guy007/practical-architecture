@@ -1,0 +1,15 @@
+{{ if eq .Type "flow" }}
+  {{ partial "docs/flow.html" . }}
+{{ else if eq .Type "steps" }}
+  <ol class="tl-steps">
+    {{ range split .Inner "\n" }}
+      {{ $item := replaceRE `^\s*\d+[.)]\s*` "" . | strings.TrimSpace }}
+      {{ with $item }}<li>{{ . | markdownify }}</li>{{ end }}
+    {{ end }}
+  </ol>
+{{ else }}
+  {{ $result := transform.HighlightCodeBlock . }}
+  <div class="tl-code-block-source"{{ with .Type }} data-code-language="{{ . | lower }}"{{ end }}>
+    {{ $result.Wrapped }}
+  </div>
+{{ end }}

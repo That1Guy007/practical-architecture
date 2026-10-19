@@ -1,0 +1,88 @@
+{{ define "main" }}
+  {{ .Scratch.Set "scope" "term" }}
+
+  {{ $showHero := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.term "key" "showhero" "default" false) }}
+  {{ $showBreadcrumbs := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.term "key" "showbreadcrumbs" "default" false) }}
+  {{ if $showHero }}
+    {{ partial "page-hero.html" . }}
+  {{ end }}
+
+  {{ partial "page-header.html" (dict
+    "context" .
+    "title" .Title
+    "description" .Description
+    "showBreadcrumbs" $showBreadcrumbs
+  ) }}
+
+  {{ if .Content }}
+    <section class="cds--grid pa-page-intro" aria-label="Introduction">
+      <div class="cds--row">
+        <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16 pa-page-intro__content pa-article-content">
+          {{ .Content }}
+        </div>
+      </div>
+    </section>
+  {{ end }}
+
+  {{ if gt (len .Pages) 0 }}
+    {{ $cardView := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.term "key" "cardview" "default" false) }}
+    {{ $groupByYear := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.term "key" "groupbyyear" "default" false) }}
+    {{ $columnClass := cond $cardView "cds--col-sm-4 cds--col-md-4 cds--col-lg-8" "cds--col-sm-4 cds--col-md-8 cds--col-lg-16" }}
+
+    {{ if $groupByYear }}
+      {{ range (.Paginate (.Pages.GroupByDate "2006")).PageGroups }}
+        {{ $yearID := printf "pa-year-%s" (.Key | urlize) }}
+        <section class="pa-year-group" aria-labelledby="{{ $yearID }}">
+          <div class="cds--grid pa-year-group__header-grid">
+            <div class="cds--row">
+              <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+                <h2 id="{{ $yearID }}" class="pa-year-group__title">{{ .Key }}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="cds--grid cds--grid--narrow pa-card-grid">
+            <ul class="cds--row pa-card-grid__row">
+              {{ range .Pages }}
+                {{ partial "article-card.html" (dict
+                  "page" .
+                  "headingLevel" 3
+                  "columnClass" $columnClass
+                ) }}
+              {{ end }}
+            </ul>
+          </div>
+        </section>
+      {{ end }}
+    {{ else }}
+      <section class="pa-list-section" aria-label="Articles">
+        <div class="cds--grid cds--grid--narrow pa-card-grid">
+          <ul class="cds--row pa-card-grid__row">
+            {{ range (.Paginate .Pages.ByDate.Reverse).Pages }}
+              {{ partial "article-card.html" (dict
+                "page" .
+                "headingLevel" 2
+                "columnClass" $columnClass
+              ) }}
+            {{ end }}
+          </ul>
+        </div>
+      </section>
+    {{ end }}
+
+    <div class="cds--grid pa-pagination-grid">
+      <div class="cds--row">
+        <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+          {{ partial "pagination.html" . }}
+        </div>
+      </div>
+    </div>
+  {{ else }}
+    <div class="cds--grid pa-empty-state">
+      <div class="cds--row">
+        <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+          <p>No articles are available for this topic yet.</p>
+        </div>
+      </div>
+    </div>
+  {{ end }}
+{{ end }}

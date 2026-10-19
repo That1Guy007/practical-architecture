@@ -1,0 +1,12 @@
+{{ with resources.Get "img/favicon.ico" }}
+  <link rel="icon" href="{{ .RelPermalink }}" sizes="32x32">
+{{ end }}
+{{ with resources.Get "img/favicon.svg" }}
+  <link rel="icon" href="{{ .RelPermalink }}" type="image/svg+xml" sizes="any">
+{{ end }}
+{{ with resources.Get "img/favicon-32.png" }}
+  <link rel="icon" href="{{ .RelPermalink }}" type="image/png" sizes="32x32">
+{{ end }}
+{{ with resources.Get "img/apple-touch-icon.png" }}
+  <link rel="apple-touch-icon" href="{{ .RelPermalink }}" sizes="180x180">
+{{ end }}

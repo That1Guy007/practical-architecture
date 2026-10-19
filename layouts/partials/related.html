@@ -1,0 +1,23 @@
+{{ $showRelated := partial "resolve-bool.html" (dict "page" .Params "site" .Site.Params.article "key" "showrelatedcontent" "default" false) }}
+{{ if $showRelated }}
+  {{ $related := .Site.RegularPages.Related . | first (.Site.Params.article.relatedContentLimit | default 3) }}
+  {{ with $related }}
+    <section class="pa-section pa-related" aria-labelledby="related-title">
+      <div class="cds--grid pa-section-heading">
+        <div class="cds--row">
+          <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-12">
+            <p class="pa-eyebrow">Keep reading</p>
+            <h2 id="related-title">Related articles</h2>
+          </div>
+        </div>
+      </div>
+      <div class="cds--grid cds--grid--narrow pa-card-grid">
+        <ul class="cds--row pa-card-grid__row">
+          {{ range . }}
+            {{ partial "article-card.html" (dict "page" . "headingLevel" 3) }}
+          {{ end }}
+        </ul>
+      </div>
+    </section>
+  {{ end }}
+{{ end }}

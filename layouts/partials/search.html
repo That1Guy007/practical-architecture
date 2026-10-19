@@ -1,0 +1,27 @@
+<cds-modal
+  id="search-modal"
+  hidden
+  aria-label="Search Practical Architecture"
+  data-search-index="{{ "index.json" | relLangURL }}">
+  <cds-modal-header>
+    <cds-modal-close-button close-button-label="Close search"></cds-modal-close-button>
+    <cds-modal-label>Practical Architecture</cds-modal-label>
+    <cds-modal-heading>Search the publication</cds-modal-heading>
+  </cds-modal-header>
+  <cds-modal-body>
+    <cds-modal-body-content description>
+      <cds-search
+        id="search-query"
+        data-modal-primary-focus
+        autocomplete="off"
+        label-text="Search articles"
+        placeholder="Search by title, series, or topic"
+        close-button-label-text="Clear search">
+      </cds-search>
+      <p id="search-status" class="pa-search-status" role="status" aria-live="polite">
+        Start typing to search all articles.
+      </p>
+      <ul id="search-results" class="pa-search-results" aria-label="Search results"></ul>
+    </cds-modal-body-content>
+  </cds-modal-body>
+</cds-modal>

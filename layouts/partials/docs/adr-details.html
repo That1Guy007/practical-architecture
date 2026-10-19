@@ -1,0 +1,18 @@
+{{ $page := . }}
+<dl class="tl-document-meta tl-adr-details" aria-label="ADR details">
+  {{ with $page.Params.adr_id }}<div class="tl-document-meta__item"><dt>Identifier</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with $page.Params.decision_date }}<div class="tl-document-meta__item"><dt>Decision date</dt><dd><time datetime="{{ . }}">{{ . }}</time></dd></div>{{ end }}
+  {{ with $page.Params.category }}<div class="tl-document-meta__item"><dt>Category</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with $page.Params.supersedes }}
+    <div class="tl-document-meta__item">
+      <dt>Supersedes</dt>
+      <dd>{{ range $index, $path := . }}{{ if $index }}, {{ end }}{{ with site.GetPage $path }}<a href="{{ .RelPermalink }}">{{ .Params.adr_id | default .Title }}</a>{{ else }}{{ $path }}{{ end }}{{ end }}</dd>
+    </div>
+  {{ end }}
+  {{ with $page.Params.superseded_by }}
+    <div class="tl-document-meta__item">
+      <dt>Superseded by</dt>
+      <dd>{{ range $index, $path := . }}{{ if $index }}, {{ end }}{{ with site.GetPage $path }}<a href="{{ .RelPermalink }}">{{ .Params.adr_id | default .Title }}</a>{{ else }}{{ $path }}{{ end }}{{ end }}</dd>
+    </div>
+  {{ end }}
+</dl>

@@ -1,0 +1,9 @@
+{{ if eq .Level 1 }}
+  {{ errorf "Technical Library Markdown must begin at heading level 2; the page title is the sole h1 (%s, %s)" .Page.RelPermalink .Position }}
+{{ end }}
+{{ $anchor := anchorize .Anchor }}
+<h{{ .Level }} id="{{ $anchor }}" data-tl-heading>
+  <a class="tl-heading-link" href="#{{ $anchor }}">
+    <span>{{ .Text | safeHTML }}</span><span class="tl-heading-link__hash" aria-hidden="true">#</span>
+  </a>
+</h{{ .Level }}>

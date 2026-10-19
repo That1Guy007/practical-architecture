@@ -1,0 +1,26 @@
+{
+  "title": "Vault on Kubernetes architecture",
+  "desc": "Clients reach a Kubernetes Service, Route or load balancer over HTTPS on port 8200. It fronts three Vault pods: vault-0 active, vault-1 and vault-2 standby. The pods are Raft voters linked on port 8201 and all write to persistent storage.",
+  "caption": "Figure 1. Reference topology. Drag to pan, Ctrl or \u2318 + scroll to zoom, or use the buttons.",
+  "width": 1040, "height": 500,
+  "legend": {"client": "Client requests \u00b7 HTTPS :8200", "raft": "Raft cluster traffic \u00b7 :8201", "store": "Writes to persistent storage"},
+  "nodes": [
+    {"id": "client", "x": 20,  "y": 210, "title": "Client / User", "sub": "CLI, UI, API, applications", "tone": "white", "desc": "CLI, UI, API and applications reach Vault over HTTPS on TCP/8200."},
+    {"id": "svc",    "x": 290, "y": 210, "title": "K8s Service / Route / LB", "sub": "Approved access path", "tone": "blue", "desc": "the approved access path in front of the Vault pods."},
+    {"id": "v0", "x": 590, "y": 50,  "title": "vault-0", "sub": "active \u00b7 Raft voter",  "tone": "green", "mono": true, "desc": "active node and Raft voter."},
+    {"id": "v1", "x": 590, "y": 210, "title": "vault-1", "sub": "standby \u00b7 Raft voter", "tone": "gray",  "mono": true, "desc": "standby node and Raft voter."},
+    {"id": "v2", "x": 590, "y": 370, "title": "vault-2", "sub": "standby \u00b7 Raft voter", "tone": "gray",  "mono": true, "desc": "standby node and Raft voter."},
+    {"id": "st", "x": 860, "y": 210, "w": 160, "title": "Persistent Storage", "sub": "Integrated Storage", "tone": "teal", "desc": "persistent volumes hold the Integrated Storage (Raft) data for each pod."}
+  ],
+  "edges": [
+    {"from": "client", "to": "svc", "kind": "client", "label": "HTTPS :8200", "dots": 4},
+    {"from": "svc", "to": "v0", "kind": "client"},
+    {"from": "svc", "to": "v1", "kind": "client"},
+    {"from": "svc", "to": "v2", "kind": "client"},
+    {"from": "v0", "to": "v1", "kind": "raft", "bidirectional": true, "label": ":8201 Raft"},
+    {"from": "v1", "to": "v2", "kind": "raft", "bidirectional": true, "label": ":8201 Raft"},
+    {"from": "v0", "to": "st", "kind": "store"},
+    {"from": "v1", "to": "st", "kind": "store"},
+    {"from": "v2", "to": "st", "kind": "store"}
+  ]
+}

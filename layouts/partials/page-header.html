@@ -1,0 +1,26 @@
+{{- $context := .context -}}
+{{- $title := .title | default $context.Title -}}
+{{- $description := .description | default "" -}}
+{{- $eyebrow := .eyebrow | default "" -}}
+{{- $showBreadcrumbs := .showBreadcrumbs | default false -}}
+
+<div class="cds--grid pa-page-header">
+  <div class="cds--row">
+    <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+      <header class="pa-page-header__content">
+        {{ if $showBreadcrumbs }}
+          <div class="pa-page-header__breadcrumbs">
+            {{ partial "breadcrumbs.html" $context }}
+          </div>
+        {{ end }}
+        {{ with $eyebrow }}
+          <p class="pa-page-header__eyebrow">{{ . }}</p>
+        {{ end }}
+        <h1 class="pa-page-header__title">{{ $title | emojify }}</h1>
+        {{ with $description }}
+          <div class="pa-page-header__description">{{ . | markdownify }}</div>
+        {{ end }}
+      </header>
+    </div>
+  </div>
+</div>

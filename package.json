@@ -1,0 +1,18 @@
+{
+  "name": "practical-architecture",
+  "private": true,
+  "scripts": {
+    "build:carbon": "sass --load-path=node_modules --quiet-deps --no-source-map --style=compressed assets/scss/carbon.scss:assets/css/carbon.css assets/scss/site.scss:assets/css/custom.css",
+    "check:js": "node --check assets/js/site.js && node --check assets/js/search.js && node --check assets/js/series-filter.js && node --check assets/js/technical-library.js && node --check assets/js/technical-document.js && node --check scripts/validate-technical-library.mjs && node --check tests/technical-library.test.cjs && node --check tests/technical-document.test.cjs && node --check tests/palette.test.cjs && node --check tests/runbooks.test.cjs",
+    "test:technical-library": "node --test --experimental-test-isolation=none tests/technical-library.test.cjs",
+    "test:technical-document": "node --test --experimental-test-isolation=none tests/technical-document.test.cjs",
+    "test:palette": "node --test --experimental-test-isolation=none tests/palette.test.cjs",
+    "test:runbooks": "node --test --experimental-test-isolation=none tests/runbooks.test.cjs",
+    "validate:technical-library": "node scripts/validate-technical-library.mjs public",
+    "test": "npm run build:carbon && npm run check:js && npm run test:technical-library && npm run test:technical-document && npm run test:palette && npm run test:runbooks"
+  },
+  "devDependencies": {
+    "@carbon/styles": "1.117.0",
+    "sass": "1.105.2"
+  }
+}

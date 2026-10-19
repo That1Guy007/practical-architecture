@@ -1,194 +1,195 @@
-var fuse;
-var showButton = document.getElementById("search-button");
-var showButtonMobile = document.getElementById("search-button-mobile");
-var hideButton = document.getElementById("close-search-button");
-var wrapper = document.getElementById("search-wrapper");
-var modal = document.getElementById("search-modal");
-var input = document.getElementById("search-query");
-var output = document.getElementById("search-results");
-var first = output.firstChild;
-var last = output.lastChild;
-var searchVisible = false;
-var indexed = false;
-var hasResults = false;
+(function () {
+  "use strict";
 
-// Listen for events
-showButton ? showButton.addEventListener("click", displaySearch) : null;
-showButtonMobile ? showButtonMobile.addEventListener("click", displaySearch) : null;
-hideButton.addEventListener("click", hideSearch);
-wrapper.addEventListener("click", hideSearch);
-modal.addEventListener("click", function (event) {
-  event.stopPropagation();
-  event.stopImmediatePropagation();
-  return false;
-});
-document.addEventListener("keydown", function (event) {
-  // Forward slash to open search wrapper
-  if (event.key == "/") {
-    const active = document.activeElement;
-    const tag = active.tagName;
-    const isInputField = tag === "INPUT" || tag === "TEXTAREA" || active.isContentEditable;
-
-    if (!searchVisible && !isInputField) {
-      event.preventDefault();
-      displaySearch();
+  function ready(callback) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", callback, { once: true });
+      return;
     }
+    callback();
   }
 
-  // Esc to close search wrapper
-  if (event.key == "Escape") {
-    hideSearch();
-  }
+  ready(function () {
+    var modal = document.getElementById("search-modal");
+    var input = document.getElementById("search-query");
+    var output = document.getElementById("search-results");
+    var status = document.getElementById("search-status");
+    var triggers = [
+      document.getElementById("search-button"),
+      document.getElementById("search-button-mobile"),
+    ].filter(Boolean);
+    var indexPromise;
+    var searchIndex;
+    var queryVersion = 0;
 
-  // Down arrow to move down results list
-  if (event.key == "ArrowDown") {
-    if (searchVisible && hasResults) {
-      event.preventDefault();
-      if (document.activeElement == input) {
-        first.focus();
-      } else if (document.activeElement == last) {
-        last.focus();
-      } else {
-        document.activeElement.parentElement.nextSibling.firstElementChild.focus();
-      }
+    if (!modal || !input || !output || !status) {
+      return;
     }
-  }
 
-  // Up arrow to move up results list
-  if (event.key == "ArrowUp") {
-    if (searchVisible && hasResults) {
-      event.preventDefault();
-      if (document.activeElement == input) {
-        input.focus();
-      } else if (document.activeElement == first) {
-        input.focus();
-      } else {
-        document.activeElement.parentElement.previousSibling.firstElementChild.focus();
-      }
-    }
-  }
-
-  // Enter to get to results
-  if (event.key == "Enter") {
-    if (searchVisible && hasResults) {
-      event.preventDefault();
-      if (document.activeElement == input) {
-        first.focus();
-      } else {
-        document.activeElement.click();
-      }
-    }
-  }
-});
-
-// Update search on each keypress
-input.onkeyup = function (event) {
-  if (fuse) executeQuery(this.value);
-};
-
-function displaySearch() {
-  if (!indexed) {
-    buildIndex();
-  }
-  if (!searchVisible) {
-    document.body.style.overflow = "hidden";
-    wrapper.style.visibility = "visible";
-    input.focus();
-    searchVisible = true;
-  }
-}
-
-function hideSearch() {
-  if (searchVisible) {
-    document.body.style.overflow = "visible";
-    wrapper.style.visibility = "hidden";
-    input.value = "";
-    output.innerHTML = "";
-    document.activeElement.blur();
-    searchVisible = false;
-  }
-}
-
-function fetchJSON(path, callback) {
-  var httpRequest = new XMLHttpRequest();
-  httpRequest.onreadystatechange = function () {
-    if (httpRequest.readyState === 4) {
-      if (httpRequest.status === 200) {
-        var data = JSON.parse(httpRequest.responseText);
-        if (callback) callback(data);
-      }
-    }
-  };
-  httpRequest.open("GET", path);
-  httpRequest.send();
-}
-
-function buildIndex() {
-  var baseURL = wrapper.getAttribute("data-url");
-  baseURL = baseURL.replace(/\/?$/, "/");
-  fetchJSON(baseURL + "index.json", function (data) {
-    var options = {
-      shouldSort: true,
-      ignoreLocation: true,
-      threshold: 0.4,
-      includeMatches: true,
-      keys: [
-        { name: "title", weight: 0.8 },
-        { name: "section", weight: 0.2 },
-        { name: "summary", weight: 0.6 },
-        { name: "content", weight: 0.4 },
-      ],
-    };
-    fuse = new Fuse(data, options);
-    indexed = true;
-  });
-}
-
-function executeQuery(term) {
-  let results = fuse.search(term);
-  let resultsHTML = "";
-
-  if (results.length > 0) {
-    results.forEach(function (value, key) {
-      var html = value.item.summary;
-      var div = document.createElement("div");
-      div.innerHTML = html;
-      value.item.summary = div.textContent || div.innerText || "";
-      var title = value.item.externalUrl
-        ? value.item.title +
-          '<span class="text-xs ml-2 align-center cursor-default text-neutral-400 dark:text-neutral-500">' +
-          value.item.externalUrl +
-          "</span>"
-        : value.item.title;
-      var linkconfig = value.item.externalUrl
-        ? 'target="_blank" rel="noopener" href="' + value.item.externalUrl + '"'
-        : 'href="' + value.item.permalink + '"';
-      resultsHTML =
-        resultsHTML +
-        `<li class="mb-2">
-          <a class="flex items-center px-3 py-2 rounded-md appearance-none bg-neutral-100 dark:bg-neutral-700 focus:bg-primary-100 hover:bg-primary-100 dark:hover:bg-primary-900 dark:focus:bg-primary-900 focus:outline-dotted focus:outline-transparent focus:outline-2"
-          ${linkconfig} tabindex="0">
-            <div class="grow">
-              <div class="-mb-1 text-lg font-bold">
-                ${title}
-              </div>
-              <div class="text-sm text-neutral-500 dark:text-neutral-400">${value.item.section}<span class="px-2 text-primary-500">&middot;</span>${value.item.date ? value.item.date : ""}</span></div>
-              <div class="text-sm italic">${value.item.summary}</div>
-            </div>
-            <div class="ml-2 ltr:block rtl:hidden text-neutral-500">&rarr;</div>
-            <div class="mr-2 ltr:hidden rtl:block text-neutral-500">&larr;</div>
-          </a>
-        </li>`;
+    customElements.whenDefined("cds-modal").then(function () {
+      modal.open = false;
     });
-    hasResults = true;
-  } else {
-    resultsHTML = "";
-    hasResults = false;
-  }
 
-  output.innerHTML = resultsHTML;
-  if (results.length > 0) {
-    first = output.firstChild.firstElementChild;
-    last = output.lastChild.firstElementChild;
-  }
-}
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function getIndex() {
+      if (searchIndex) {
+        return Promise.resolve(searchIndex);
+      }
+      if (indexPromise) {
+        return indexPromise;
+      }
+
+      setStatus("Loading the search index…");
+      indexPromise = fetch(modal.dataset.searchIndex, {
+        headers: { Accept: "application/json" },
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("Search index request failed.");
+          }
+          return response.json();
+        })
+        .then(function (pages) {
+          if (!window.Fuse) {
+            throw new Error("Search library is unavailable.");
+          }
+          searchIndex = new window.Fuse(pages, {
+            shouldSort: true,
+            ignoreLocation: true,
+            threshold: 0.36,
+            keys: [
+              { name: "title", weight: 0.8 },
+              { name: "summary", weight: 0.6 },
+              { name: "content", weight: 0.35 },
+              { name: "section", weight: 0.2 },
+            ],
+          });
+          setStatus("Search is ready. Start typing to find an article.");
+          return searchIndex;
+        })
+        .catch(function () {
+          indexPromise = null;
+          setStatus("Search is temporarily unavailable. Please try again.");
+          return null;
+        });
+
+      return indexPromise;
+    }
+
+    function appendMetadata(container, item) {
+      var metadata = [item.section, item.date].filter(Boolean);
+      if (!metadata.length) {
+        return;
+      }
+      var line = document.createElement("p");
+      line.className = "pa-search-result-meta";
+      line.textContent = metadata.join(" · ");
+      container.appendChild(line);
+    }
+
+    function renderResults(results, term) {
+      output.replaceChildren();
+
+      if (!term) {
+        setStatus("Start typing to search all articles.");
+        return;
+      }
+
+      if (!results.length) {
+        setStatus('No results found for “' + term + '”.');
+        return;
+      }
+
+      var displayedResults = results.slice(0, 12);
+      displayedResults.forEach(function (result) {
+        var item = result.item;
+        var listItem = document.createElement("li");
+        var link = document.createElement("a");
+        var title = document.createElement("h3");
+        var summary = document.createElement("p");
+
+        link.className = "pa-search-result";
+        link.href = item.externalUrl || item.permalink;
+        if (item.externalUrl) {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+        }
+
+        title.textContent = item.title;
+        link.appendChild(title);
+        appendMetadata(link, item);
+        if (item.summary) {
+          summary.textContent = String(item.summary).trim();
+          link.appendChild(summary);
+        }
+        if (item.externalUrl) {
+          var newTabNote = document.createElement("span");
+          newTabNote.className = "pa-visually-hidden";
+          newTabNote.textContent = " (opens in a new tab)";
+          link.appendChild(newTabNote);
+        }
+        listItem.appendChild(link);
+        output.appendChild(listItem);
+      });
+
+      if (displayedResults.length < results.length) {
+        setStatus(
+          "Showing " + displayedResults.length + " of " + results.length +
+            ' results for “' + term + '”.'
+        );
+      } else {
+        setStatus(
+          results.length + (results.length === 1 ? " result" : " results") +
+            ' found for “' + term + '”.'
+        );
+      }
+    }
+
+    function runSearch() {
+      var term = String(input.value || "").trim();
+      var requestVersion = ++queryVersion;
+      if (!term) {
+        renderResults([], "");
+        return;
+      }
+
+      getIndex().then(function (index) {
+        var currentTerm = String(input.value || "").trim();
+        if (index && requestVersion === queryVersion && term === currentTerm) {
+          renderResults(index.search(term), term);
+        }
+      });
+    }
+
+    function openSearch(event) {
+      if (event) {
+        event.preventDefault();
+      }
+      getIndex();
+      customElements.whenDefined("cds-modal").then(function () {
+        modal.hidden = false;
+        modal.open = true;
+      });
+    }
+
+    triggers.forEach(function (trigger) {
+      trigger.addEventListener("click", openSearch);
+    });
+    input.addEventListener("cds-search-input", runSearch);
+
+    document.addEventListener("keydown", function (event) {
+      var active = document.activeElement;
+      var isField =
+        active &&
+        (active.tagName === "INPUT" ||
+          active.tagName === "TEXTAREA" ||
+          active.isContentEditable);
+      if (event.key === "/" && !isField && !modal.open) {
+        openSearch(event);
+      }
+    });
+  });
+})();

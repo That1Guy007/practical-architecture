@@ -1,0 +1,43 @@
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161616">
+
+  {{ $pageTitle := cond .IsHome .Site.Title (printf "%s · %s" (.Title | plainify) .Site.Title) }}
+  <title>{{ $pageTitle }}</title>
+  <meta name="title" content="{{ $pageTitle }}">
+  {{ with .Description | default .Summary | default .Site.Params.description }}
+    <meta name="description" content="{{ . | plainify | strings.TrimSpace }}">
+  {{ end }}
+  {{ with .Site.Params.Author.name }}<meta name="author" content="{{ . }}">{{ end }}
+  <link rel="canonical" href="{{ .Permalink }}">
+  {{ range .AlternativeOutputFormats }}
+    <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .RelPermalink }}" title="{{ $.Site.Title }}">
+  {{ end }}
+
+  {{ template "_internal/opengraph.html" . }}
+  {{ template "_internal/twitter_cards.html" . }}
+
+  <link rel="stylesheet" href="https://1.www.s81c.com/common/carbon/plex/sans.css">
+  {{ $styles := slice }}
+  {{ with resources.Get "css/palette.css" }}{{ $styles = $styles | append . }}{{ end }}
+  {{ with resources.Get "css/carbon.css" }}{{ $styles = $styles | append . }}{{ end }}
+  {{ with resources.Get "css/custom.css" }}{{ $styles = $styles | append . }}{{ end }}
+  {{ if $styles }}
+    {{ $bundle := $styles | resources.Concat "css/practical-architecture.css" | resources.Minify | resources.Fingerprint "sha512" }}
+    <link rel="stylesheet" href="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}">
+  {{ end }}
+
+  {{ partial "favicon.html" . }}
+
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/version/v2.65.0/ui-shell.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/version/v2.65.0/button.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/version/v2.65.0/tile.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/version/v2.65.0/tag.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/version/v2.65.0/search.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/version/v2.65.0/breadcrumb.min.js"></script>
+  <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/version/v2.65.0/modal.min.js"></script>
+
+  {{ partial "vendor.html" . }}
+  {{ partial "schema.html" . }}
+</head>

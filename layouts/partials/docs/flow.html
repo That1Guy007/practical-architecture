@@ -1,0 +1,225 @@
+{{- $context := . -}}
+{{- $spec := transform.Unmarshal .Inner -}}
+{{- if not (reflect.IsMap $spec) -}}
+  {{- errorf "flow code block must contain a JSON object (%s, %s)" .Page.RelPermalink .Position -}}
+{{- end -}}
+
+{{- $title := strings.TrimSpace (printf "%v" ($spec.title | default "")) -}}
+{{- $description := strings.TrimSpace (printf "%v" ($spec.desc | default "")) -}}
+{{- if not $title }}{{ errorf "flow diagram requires a non-empty title (%s, %s)" .Page.RelPermalink .Position }}{{ end -}}
+{{- if not $description }}{{ errorf "flow diagram requires a non-empty desc (%s, %s)" .Page.RelPermalink .Position }}{{ end -}}
+
+{{- $nodesInput := $spec.nodes | default (slice) -}}
+{{- $edgesInput := $spec.edges | default (slice) -}}
+{{- if not (reflect.IsSlice $nodesInput) -}}
+  {{- errorf "flow diagram nodes must be a JSON array (%s, %s)" .Page.RelPermalink .Position -}}
+  {{- $nodesInput = slice -}}
+{{- end -}}
+{{- if not (reflect.IsSlice $edgesInput) -}}
+  {{- errorf "flow diagram edges must be a JSON array (%s, %s)" .Page.RelPermalink .Position -}}
+  {{- $edgesInput = slice -}}
+{{- end -}}
+{{- if eq (len $nodesInput) 0 }}{{ errorf "flow diagram requires at least one node (%s, %s)" .Page.RelPermalink .Position }}{{ end -}}
+{{- if eq (len $edgesInput) 0 }}{{ errorf "flow diagram requires at least one edge (%s, %s)" .Page.RelPermalink .Position }}{{ end -}}
+
+{{- $width := float ($spec.width | default 1040) -}}
+{{- $height := float ($spec.height | default 500) -}}
+{{- if or (le $width 0) (le $height 0) }}{{ errorf "flow diagram width and height must be positive (%s, %s)" .Page.RelPermalink .Position }}{{ end -}}
+{{- $flowID := printf "tl-flow-%s-%d" (.Page.RelPermalink | anchorize) .Ordinal -}}
+{{- $titleID := printf "%s-title" $flowID -}}
+{{- $descriptionID := printf "%s-description" $flowID -}}
+{{- $detailID := printf "%s-detail" $flowID -}}
+{{- $nodes := newScratch -}}
+{{- $links := newScratch -}}
+{{- $nodeOrder := slice -}}
+{{- $toneMap := dict "white" "neutral" "gray" "muted" "blue" "brand" "green" "green" "teal" "teal" "purple" "purple" "red" "red" "yellow" "yellow" "neutral" "neutral" -}}
+
+{{- range $index, $node := $nodesInput -}}
+  {{- if not (reflect.IsMap $node) }}{{ errorf "flow node %d must be a JSON object (%s, %s)" $index $context.Page.RelPermalink $context.Position }}{{ continue }}{{ end -}}
+  {{- $nodeID := printf "%v" ($node.id | default "") -}}
+  {{- if not $nodeID }}{{ errorf "flow node %d requires an id (%s, %s)" $index $context.Page.RelPermalink $context.Position }}{{ continue }}{{ end -}}
+  {{- if not (findRE `^[A-Za-z][A-Za-z0-9_-]*$` $nodeID) }}{{ errorf "flow node id %q must begin with a letter and contain only letters, digits, underscores, or hyphens (%s, %s)" $nodeID $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- if $nodes.Get $nodeID }}{{ errorf "flow node id %q is duplicated (%s, %s)" $nodeID $context.Page.RelPermalink $context.Position }}{{ continue }}{{ end -}}
+  {{- $nodeTitle := strings.TrimSpace (printf "%v" ($node.title | default "")) -}}
+  {{- $nodeDescription := strings.TrimSpace (printf "%v" ($node.desc | default "")) -}}
+  {{- if not $nodeTitle }}{{ errorf "flow node %q requires a title (%s, %s)" $nodeID $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- if not $nodeDescription }}{{ errorf "flow node %q requires a non-empty desc (%s, %s)" $nodeID $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- if not (isset $node "x") }}{{ errorf "flow node %q requires x (%s, %s)" $nodeID $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- if not (isset $node "y") }}{{ errorf "flow node %q requires y (%s, %s)" $nodeID $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- $nodeWidth := float ($node.w | default 180) -}}
+  {{- $nodeHeight := float ($node.h | default 80) -}}
+  {{- if or (le $nodeWidth 0) (le $nodeHeight 0) }}{{ errorf "flow node %q width and height must be positive (%s, %s)" $nodeID $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- $inputTone := printf "%v" ($node.tone | default "neutral") | lower -}}
+  {{- $tone := index $toneMap $inputTone | default "neutral" -}}
+  {{- $normalized := dict
+      "id" $nodeID
+      "x" (float ($node.x | default 0))
+      "y" (float ($node.y | default 0))
+      "w" $nodeWidth
+      "h" $nodeHeight
+      "title" $nodeTitle
+      "sub" ($node.sub | default "")
+      "desc" $nodeDescription
+      "tone" $tone
+      "mono" ($node.mono | default false)
+  -}}
+  {{- $nodes.Set $nodeID $normalized -}}
+  {{- $links.Set $nodeID (slice) -}}
+  {{- $nodeOrder = $nodeOrder | append $nodeID -}}
+{{- end -}}
+
+{{- $kindMap := dict "client" "client" "raft" "raft" "store" "store" "default" "default" -}}
+{{- $edgeKinds := newScratch -}}
+{{- $edgeKinds.Set "items" (slice) -}}
+{{- range $index, $edge := $edgesInput -}}
+  {{- if not (reflect.IsMap $edge) }}{{ errorf "flow edge %d must be a JSON object (%s, %s)" $index $context.Page.RelPermalink $context.Position }}{{ continue }}{{ end -}}
+  {{- $from := printf "%v" ($edge.from | default "") -}}
+  {{- $to := printf "%v" ($edge.to | default "") -}}
+  {{- if not ($nodes.Get $from) }}{{ errorf "flow edge %d references unknown source node %q (%s, %s)" $index $from $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- if not ($nodes.Get $to) }}{{ errorf "flow edge %d references unknown destination node %q (%s, %s)" $index $to $context.Page.RelPermalink $context.Position }}{{ end -}}
+  {{- with $nodes.Get $from }}{{ $links.Add $from (slice (printf "%s-edge-%d" $flowID $index)) }}{{ end -}}
+  {{- with $nodes.Get $to }}{{ $links.Add $to (slice (printf "%s-edge-%d" $flowID $index)) }}{{ end -}}
+  {{- $inputKind := printf "%v" ($edge.kind | default "client") | lower -}}
+  {{- $kind := index $kindMap $inputKind | default "default" -}}
+  {{- if not (in ($edgeKinds.Get "items") $kind) }}{{ $edgeKinds.Add "items" (slice $kind) }}{{ end -}}
+{{- end -}}
+
+<figure class="tl-flow" data-tl-flow>
+  <div class="tl-flow__viewport" data-tl-flow-viewport>
+    <svg class="tl-flow__svg" viewBox="0 0 {{ $width }} {{ $height }}" data-width="{{ $width }}" data-height="{{ $height }}" data-tl-flow-svg role="group" aria-labelledby="{{ $titleID }} {{ $descriptionID }}" tabindex="0">
+      <title id="{{ $titleID }}">{{ $title }}</title>
+      <desc id="{{ $descriptionID }}">{{ $description }}</desc>
+      <defs>
+        <pattern id="{{ $flowID }}-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="1" class="tl-flow__grid-dot" />
+        </pattern>
+      </defs>
+      <rect class="tl-flow__grid" x="{{ mul $width -2 }}" y="{{ mul $height -4 }}" width="{{ mul $width 5 }}" height="{{ mul $height 9 }}" fill="url(#{{ $flowID }}-grid)" />
+
+      {{- range $index, $edge := $edgesInput -}}
+        {{- $fromID := printf "%v" ($edge.from | default "") -}}
+        {{- $toID := printf "%v" ($edge.to | default "") -}}
+        {{- $from := $nodes.Get $fromID -}}
+        {{- $to := $nodes.Get $toID -}}
+        {{- if and $from $to -}}
+          {{- $inputKind := printf "%v" ($edge.kind | default "client") | lower -}}
+          {{- $kind := index $kindMap $inputKind | default "default" -}}
+          {{- $edgeID := printf "%s-edge-%d" $flowID $index -}}
+          {{- $pathID := printf "%s-path" $edgeID -}}
+          {{- $path := $edge.path | default "" -}}
+          {{- $vertical := false -}}
+          {{- $labelX := 0.0 -}}
+          {{- $labelY := 0.0 -}}
+          {{- if $path -}}
+            {{- with $edge.label_at -}}
+              {{- if ne (len .) 2 }}{{ errorf "flow edge %d label_at must contain exactly two numbers (%s, %s)" $index $context.Page.RelPermalink $context.Position }}{{ else }}{{ $labelX = float (index . 0) }}{{ $labelY = float (index . 1) }}{{ end -}}
+            {{- else -}}
+              {{- $labelX = div (add $from.x $to.x) 2.0 -}}
+              {{- $labelY = div (add $from.y $to.y) 2.0 -}}
+            {{- end -}}
+          {{- else if ge $to.x (add $from.x $from.w) -}}
+            {{- $startX := add $from.x $from.w -}}
+            {{- $startY := add $from.y (div $from.h 2.0) -}}
+            {{- $endX := $to.x -}}
+            {{- $endY := add $to.y (div $to.h 2.0) -}}
+            {{- $deltaX := div (sub $endX $startX) 2.0 -}}
+            {{- $path = printf "M%v %v C%v %v %v %v %v %v" $startX $startY (add $startX $deltaX) $startY (sub $endX $deltaX) $endY $endX $endY -}}
+            {{- $labelX = div (add $startX $endX) 2.0 -}}
+            {{- $labelY = sub (div (add $startY $endY) 2.0) 16 -}}
+          {{- else if le (add $to.x $to.w) $from.x -}}
+            {{- $startX := $from.x -}}
+            {{- $startY := add $from.y (div $from.h 2.0) -}}
+            {{- $endX := add $to.x $to.w -}}
+            {{- $endY := add $to.y (div $to.h 2.0) -}}
+            {{- $deltaX := div (sub $endX $startX) 2.0 -}}
+            {{- $path = printf "M%v %v C%v %v %v %v %v %v" $startX $startY (add $startX $deltaX) $startY (sub $endX $deltaX) $endY $endX $endY -}}
+            {{- $labelX = div (add $startX $endX) 2.0 -}}
+            {{- $labelY = sub (div (add $startY $endY) 2.0) 16 -}}
+          {{- else -}}
+            {{- $vertical = true -}}
+            {{- $startX := add $from.x (div $from.w 2.0) -}}
+            {{- $endX := add $to.x (div $to.w 2.0) -}}
+            {{- $startY := cond (ge $to.y (add $from.y $from.h)) (add $from.y $from.h) $from.y -}}
+            {{- $endY := cond (ge $to.y (add $from.y $from.h)) $to.y (add $to.y $to.h) -}}
+            {{- $path = printf "M%v %v L%v %v" $startX $startY $endX $endY -}}
+            {{- $labelX = add (div (add $startX $endX) 2.0) 12 -}}
+            {{- $labelY = add (div (add $startY $endY) 2.0) 4 -}}
+          {{- end -}}
+          {{- $duration := float ($edge.dur | default (cond (eq $kind "store") 3.2 2.6)) -}}
+          {{- $dotCount := int ($edge.dots | default (cond $vertical 2 3)) -}}
+          {{- if or (lt $dotCount 1) (gt $dotCount 12) }}{{ errorf "flow edge %d dots must be between 1 and 12 (%s, %s)" $index $context.Page.RelPermalink $context.Position }}{{ $dotCount = 2 }}{{ end -}}
+          {{- if le $duration 0 }}{{ errorf "flow edge %d dur must be positive (%s, %s)" $index $context.Page.RelPermalink $context.Position }}{{ $duration = 2.6 }}{{ end -}}
+          <g class="tl-flow__edge" id="{{ $edgeID }}" data-kind="{{ $kind }}" data-tl-flow-edge>
+            <path class="tl-flow__line" id="{{ $pathID }}" d="{{ $path }}" />
+            {{- range $dotIndex := seq $dotCount }}
+              <circle class="tl-flow__motion" r="4">
+                <animateMotion dur="{{ $duration }}s" begin="-{{ div (mul $duration (sub $dotIndex 1)) $dotCount }}s" repeatCount="indefinite"><mpath href="#{{ $pathID }}" /></animateMotion>
+              </circle>
+            {{- end }}
+            {{- if $edge.bidirectional }}
+              {{- range $dotIndex := seq $dotCount }}
+                <circle class="tl-flow__motion" r="4">
+                  <animateMotion dur="{{ $duration }}s" begin="-{{ div (mul $duration (sub $dotIndex 1)) $dotCount }}s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#{{ $pathID }}" /></animateMotion>
+                </circle>
+              {{- end }}
+            {{- end }}
+          </g>
+          {{- with $edge.label }}<text class="tl-flow__label" data-kind="{{ $kind }}" x="{{ $labelX }}" y="{{ $labelY }}"{{ if not $vertical }} text-anchor="middle"{{ end }}>{{ . }}</text>{{ end -}}
+        {{- end -}}
+      {{- end }}
+
+      {{- range $nodeID := $nodeOrder -}}
+        {{- $node := $nodes.Get $nodeID -}}
+        {{- $nodeDetail := $node.title -}}
+        {{- with $node.desc }}{{ $nodeDetail = printf "%s. %s" $node.title . }}{{ end -}}
+        <g class="tl-flow__node" data-tone="{{ $node.tone }}" data-node-id="{{ $node.id }}" data-links="{{ delimit ($links.Get $node.id) " " }}" data-detail="{{ $nodeDetail }}" data-tl-flow-node tabindex="0" focusable="true" role="group" aria-label="{{ $nodeDetail }}" aria-describedby="{{ $detailID }}">
+          <rect class="tl-flow__node-box" x="{{ $node.x }}" y="{{ $node.y }}" width="{{ $node.w }}" height="{{ $node.h }}" rx="6" />
+          <text class="tl-flow__node-title{{ if $node.mono }} tl-flow__node-title--mono{{ end }}" x="{{ add $node.x 16 }}" y="{{ add $node.y 32 }}">{{ $node.title }}</text>
+          {{- with $node.sub }}<text class="tl-flow__node-subtitle" x="{{ add $node.x 16 }}" y="{{ add $node.y 54 }}">{{ . }}</text>{{ end -}}
+        </g>
+      {{- end }}
+    </svg>
+
+    <div class="tl-flow__controls" role="group" aria-label="Diagram controls">
+      <button class="tl-flow__control" type="button" data-tl-flow-action="pause" aria-pressed="false">Pause</button>
+      <button class="tl-flow__control tl-flow__control--icon" type="button" data-tl-flow-action="zoom-out" aria-label="Zoom out"><span aria-hidden="true">−</span></button>
+      <button class="tl-flow__control tl-flow__control--icon" type="button" data-tl-flow-action="fit" aria-label="Fit diagram to view">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+      </button>
+      <button class="tl-flow__control tl-flow__control--icon" type="button" data-tl-flow-action="zoom-in" aria-label="Zoom in"><span aria-hidden="true">+</span></button>
+    </div>
+  </div>
+
+  {{- $legend := $spec.legend | default (dict) -}}
+  {{- $kindLabels := dict "client" "Client requests" "raft" "Cluster traffic" "store" "Writes to storage" "default" "Connection" -}}
+  <ul class="tl-flow__legend" aria-label="Diagram legend">
+    {{- range $kind := $edgeKinds.Get "items" }}
+      {{- $label := index $kindLabels $kind -}}
+      {{- if and (reflect.IsMap $legend) (isset $legend $kind) }}{{ $label = index $legend $kind }}{{ end -}}
+      <li class="tl-flow__legend-item"><span class="tl-flow__swatch" data-kind="{{ $kind }}" aria-hidden="true"></span>{{ $label }}</li>
+    {{- end }}
+  </ul>
+
+  <p class="tl-flow__detail" id="{{ $detailID }}" data-tl-flow-detail aria-live="polite">Focus or point to a node to trace its connections.</p>
+
+  <details class="tl-flow__fallback">
+    <summary>Text description of this diagram</summary>
+    <p>{{ $description }}</p>
+    <ol class="tl-flow__node-list">
+      {{- range $nodeID := $nodeOrder -}}
+        {{- $node := $nodes.Get $nodeID -}}
+        <li><strong>{{ $node.title }}</strong>{{ with $node.sub }} — {{ . }}{{ end }}{{ with $node.desc }}: {{ . }}{{ end }}</li>
+      {{- end }}
+    </ol>
+    <p><strong>Connections:</strong></p>
+    <ul>
+      {{- range $edge := $edgesInput -}}
+        {{- $from := $nodes.Get (printf "%v" ($edge.from | default "")) -}}
+        {{- $to := $nodes.Get (printf "%v" ($edge.to | default "")) -}}
+        {{- if and $from $to }}<li>{{ $from.title }} to {{ $to.title }}{{ with $edge.label }} — {{ . }}{{ end }}{{ if $edge.bidirectional }} (bidirectional){{ end }}</li>{{ end -}}
+      {{- end }}
+    </ul>
+  </details>
+
+  <figcaption class="tl-flow__caption">{{ $spec.caption | default "Interactive architecture diagram. Drag to pan, use Control or Command plus scroll to zoom, or use the diagram controls." }}</figcaption>
+</figure>

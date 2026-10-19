@@ -1,0 +1,8 @@
+{{ $anchor := anchorize .Anchor }}
+{{ $showAnchors := partial "resolve-bool.html" (dict "page" .Page.Params "site" .Page.Site.Params.article "key" "showheadinganchors" "default" true) }}
+<h{{ .Level }} id="{{ $anchor }}">
+  {{ .Text | safeHTML }}
+  {{ if $showAnchors }}
+    <a class="pa-heading-anchor" href="#{{ $anchor }}" aria-label="Link to {{ .Text | plainify }}"></a>
+  {{ end }}
+</h{{ .Level }}>

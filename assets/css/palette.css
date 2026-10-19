@@ -1,0 +1,30 @@
+/*
+ * Practical Architecture palette
+ *
+ * These foundation tokens are shared by the Carbon-based blog and the
+ * independently styled Technical Library. Components should consume their
+ * own semantic tokens rather than using these values directly.
+ */
+:root {
+  --pa-charcoal-100: #161616;
+  --pa-charcoal-90: #1c1c1c;
+  --pa-charcoal-80: #222222;
+  --pa-charcoal-70: #2e2e2e;
+  --pa-emerald-60: #2b825b;
+  --pa-emerald-50: #40bf86;
+  --pa-gray-50: #7e7e7e;
+  --pa-gray-10: #ededed;
+
+  /* Supporting values preserve readable text and interaction contrast. */
+  --pa-white: #ffffff;
+  --pa-gray-30: #c6c6c6;
+  --pa-gray-40: #a8a8a8;
+  --pa-gray-60: #525252;
+  --pa-gray-70: #404040;
+  --pa-emerald-70: #236b4b;
+  --pa-emerald-80: #153a2b;
+  --pa-emerald-40: #63d5a3;
+  --pa-emerald-10: #dcebe3;
+  --pa-warning: #f4bd62;
+  --pa-danger: #ff8a83;
+}

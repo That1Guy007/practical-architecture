@@ -1,0 +1,131 @@
+@use '@carbon/styles/scss/config' with (
+  $css--body: true,
+  $css--default-type: true,
+  $css--emit-type-custom-props: true,
+  $css--reset: true,
+  $use-flexbox-grid: true
+);
+@use '@carbon/styles/scss/reset';
+@use '@carbon/styles/scss/grid';
+@use '@carbon/styles/scss/layer';
+@use '@carbon/styles/scss/layout';
+@use '@carbon/styles/scss/spacing';
+@use '@carbon/styles/scss/theme';
+@use '@carbon/styles/scss/themes';
+@use '@carbon/styles/scss/type';
+@use '@carbon/styles/scss/components/button';
+
+:root,
+.cds--g100 {
+  @include theme.theme(themes.$g100);
+
+  /* Practical Architecture charcoal + emerald semantic theme. */
+  --cds-background: var(--pa-charcoal-100);
+  --cds-background-active: rgba(237, 237, 237, 0.24);
+  --cds-background-brand: var(--pa-emerald-60);
+  --cds-background-hover: rgba(237, 237, 237, 0.12);
+  --cds-background-selected: rgba(237, 237, 237, 0.18);
+  --cds-background-selected-hover: rgba(237, 237, 237, 0.24);
+
+  --cds-layer-01: var(--pa-charcoal-90);
+  --cds-layer-02: var(--pa-charcoal-80);
+  --cds-layer-03: var(--pa-charcoal-70);
+  --cds-layer-background-01: var(--pa-charcoal-100);
+  --cds-layer-background-02: var(--pa-charcoal-90);
+  --cds-layer-background-03: var(--pa-charcoal-80);
+  --cds-layer-hover-01: var(--pa-charcoal-80);
+  --cds-layer-hover-02: var(--pa-charcoal-70);
+  --cds-layer-hover-03: var(--pa-gray-70);
+  --cds-layer-active-01: var(--pa-charcoal-70);
+  --cds-layer-active-02: var(--pa-gray-70);
+  --cds-layer-active-03: var(--pa-gray-60);
+  --cds-layer-selected-01: var(--pa-charcoal-80);
+  --cds-layer-selected-02: var(--pa-charcoal-70);
+  --cds-layer-selected-03: var(--pa-gray-70);
+  --cds-layer-selected-hover-01: var(--pa-charcoal-70);
+  --cds-layer-selected-hover-02: var(--pa-gray-70);
+  --cds-layer-selected-hover-03: var(--pa-gray-60);
+  --cds-layer-accent-01: var(--pa-charcoal-80);
+  --cds-layer-accent-02: var(--pa-charcoal-70);
+  --cds-layer-accent-03: var(--pa-gray-70);
+  --cds-layer-accent-hover-01: var(--pa-charcoal-70);
+  --cds-layer-accent-hover-02: var(--pa-gray-70);
+  --cds-layer-accent-hover-03: var(--pa-gray-60);
+
+  --cds-field-01: var(--pa-charcoal-90);
+  --cds-field-02: var(--pa-charcoal-80);
+  --cds-field-03: var(--pa-charcoal-70);
+  --cds-field-hover-01: var(--pa-charcoal-80);
+  --cds-field-hover-02: var(--pa-charcoal-70);
+  --cds-field-hover-03: var(--pa-gray-70);
+
+  --cds-border-subtle-00: var(--pa-charcoal-80);
+  --cds-border-subtle-01: var(--pa-charcoal-70);
+  --cds-border-subtle-02: var(--pa-gray-60);
+  --cds-border-subtle-03: var(--pa-gray-50);
+  --cds-border-strong-01: var(--pa-gray-50);
+  --cds-border-strong-02: var(--pa-gray-40);
+  --cds-border-strong-03: var(--pa-gray-30);
+  --cds-border-tile-01: var(--pa-charcoal-70);
+  --cds-border-tile-02: var(--pa-gray-60);
+  --cds-border-tile-03: var(--pa-gray-50);
+  --cds-border-interactive: var(--pa-emerald-50);
+
+  --cds-text-primary: var(--pa-gray-10);
+  --cds-text-secondary: var(--pa-gray-30);
+  --cds-text-helper: var(--pa-gray-40);
+  --cds-text-placeholder: var(--pa-gray-40);
+  --cds-text-inverse: var(--pa-charcoal-100);
+  --cds-text-on-color: var(--pa-white);
+  --cds-icon-primary: var(--pa-gray-10);
+  --cds-icon-secondary: var(--pa-gray-30);
+  --cds-icon-interactive: var(--pa-emerald-50);
+  --cds-icon-inverse: var(--pa-charcoal-100);
+  --cds-icon-on-color: var(--pa-white);
+
+  --cds-link-primary: var(--pa-emerald-50);
+  --cds-link-primary-hover: var(--pa-emerald-40);
+  --cds-link-secondary: var(--pa-emerald-40);
+  --cds-link-inverse: var(--pa-emerald-10);
+  --cds-link-inverse-hover: var(--pa-white);
+  --cds-link-inverse-active: var(--pa-white);
+  --cds-link-inverse-visited: var(--pa-gray-30);
+  --cds-link-visited: var(--pa-gray-40);
+  --cds-interactive: var(--pa-emerald-50);
+  --cds-focus: var(--pa-emerald-50);
+  --cds-focus-inset: var(--pa-charcoal-100);
+  --cds-focus-inverse: var(--pa-emerald-60);
+  --cds-highlight: var(--pa-emerald-80);
+
+  --cds-button-primary: var(--pa-emerald-60);
+  --cds-button-primary-hover: var(--pa-emerald-70);
+  --cds-button-primary-active: var(--pa-emerald-80);
+  --cds-button-secondary: var(--pa-charcoal-70);
+  --cds-button-secondary-hover: var(--pa-gray-70);
+  --cds-button-secondary-active: var(--pa-gray-60);
+  --cds-button-tertiary: var(--pa-emerald-50);
+  --cds-button-tertiary-hover: var(--pa-emerald-50);
+  --cds-button-tertiary-active: var(--pa-emerald-40);
+
+  --cds-support-info: var(--pa-emerald-50);
+  --cds-support-info-inverse: var(--pa-emerald-70);
+  --cds-support-success: var(--pa-emerald-50);
+  --cds-skeleton-background: var(--pa-charcoal-80);
+  --cds-skeleton-element: var(--pa-charcoal-70);
+}
+
+:root {
+  --cds-spacing-01: #{spacing.$spacing-01};
+  --cds-spacing-02: #{spacing.$spacing-02};
+  --cds-spacing-03: #{spacing.$spacing-03};
+  --cds-spacing-04: #{spacing.$spacing-04};
+  --cds-spacing-05: #{spacing.$spacing-05};
+  --cds-spacing-06: #{spacing.$spacing-06};
+  --cds-spacing-07: #{spacing.$spacing-07};
+  --cds-spacing-08: #{spacing.$spacing-08};
+  --cds-spacing-09: #{spacing.$spacing-09};
+  --cds-spacing-10: #{spacing.$spacing-10};
+  --cds-spacing-11: #{spacing.$spacing-11};
+  --cds-spacing-12: #{spacing.$spacing-12};
+  --cds-spacing-13: #{spacing.$spacing-13};
+}

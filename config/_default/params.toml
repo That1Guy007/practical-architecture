@@ -2,7 +2,7 @@
 colorScheme          = "slate"
 defaultAppearance    = "dark"
 autoSwitchAppearance = false
-logo                 = "img/blog-emblem-256x256-transparent.png"
+logo                 = "img/practical-architecture-mark.svg"
 
 # ---- Features ----
 enableSearch    = true
@@ -45,7 +45,7 @@ enableA11y      = false
   seriesOpened         = true
   showSummary          = true
   invertPagination     = false
-  sharingLinks         = ["linkedin", "x-twitter", "reddit", "email"]
+  sharingLinks         = ["linkedin", "twitter", "reddit", "email"]
   showEdit             = false
 
 # ---- List pages ----

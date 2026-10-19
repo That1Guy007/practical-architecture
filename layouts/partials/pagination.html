@@ -1,0 +1,31 @@
+{{- if gt .Paginator.TotalPages 1 -}}
+  <nav class="pa-pagination" aria-label="Pagination">
+    <ul>
+      {{ if .Paginator.HasPrev }}
+        <li><a href="{{ .Paginator.Prev.URL }}" rel="prev" aria-label="Previous page">Previous</a></li>
+      {{ end }}
+
+      {{ .Scratch.Set "paginator.ellipsed" false }}
+      {{ range .Paginator.Pagers }}
+        {{ $right := sub .TotalPages .PageNumber }}
+        {{ $showNumber := or (le .PageNumber 1) (eq $right 0) }}
+        {{ $showNumber = or $showNumber (and (gt .PageNumber (sub $.Paginator.PageNumber 3)) (lt .PageNumber (add $.Paginator.PageNumber 3))) }}
+        {{ if $showNumber }}
+          {{ $.Scratch.Set "paginator.ellipsed" false }}
+          <li>
+            <a href="{{ .URL }}" {{ if eq . $.Paginator }}aria-current="page"{{ end }}>
+              <span class="pa-visually-hidden">Page </span>{{ .PageNumber }}
+            </a>
+          </li>
+        {{ else if not ($.Scratch.Get "paginator.ellipsed") }}
+          {{ $.Scratch.Set "paginator.ellipsed" true }}
+          <li><span aria-hidden="true">&hellip;</span></li>
+        {{ end }}
+      {{ end }}
+
+      {{ if .Paginator.HasNext }}
+        <li><a href="{{ .Paginator.Next.URL }}" rel="next" aria-label="Next page">Next</a></li>
+      {{ end }}
+    </ul>
+  </nav>
+{{- end -}}

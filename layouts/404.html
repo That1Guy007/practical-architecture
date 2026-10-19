@@ -1,0 +1,17 @@
+{{ define "main" }}
+  <section class="pa-error-page" aria-labelledby="error-title">
+    <div class="cds--grid">
+      <div class="cds--row">
+        <div class="cds--col-sm-4 cds--col-md-6 cds--col-lg-10">
+          <p class="pa-eyebrow">Error 404</p>
+          <h1 id="error-title">This page is off the map</h1>
+          <p>The address may have changed, or the page may no longer exist.</p>
+          <div class="pa-actions">
+            <a class="pa-button pa-button-primary" href="{{ .Site.Home.RelPermalink }}">Return home</a>
+            <a class="pa-button pa-button-secondary" href="{{ "posts/" | relLangURL }}">Browse all posts</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{{ end }}

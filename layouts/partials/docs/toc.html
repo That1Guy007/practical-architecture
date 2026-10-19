@@ -1,0 +1,9 @@
+{{ if in .TableOfContents "<li>" }}
+  {{ $tocID := printf "tl-toc-%s" (.File.UniqueID | default (.RelPermalink | anchorize)) }}
+  <div class="tl-toc">
+    <details class="tl-toc__disclosure" open data-tl-toc>
+      <summary class="tl-toc__summary" id="{{ $tocID }}">On this page</summary>
+      {{ replace .TableOfContents "<nav id=\"TableOfContents\">" (printf "<nav id=\"TableOfContents\" aria-labelledby=\"%s\">" $tocID) | safeHTML }}
+    </details>
+  </div>
+{{ end }}

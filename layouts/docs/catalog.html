@@ -1,0 +1,60 @@
+{{ define "main" }}
+  {{ $pages := where site.RegularPages "Section" "docs" }}
+  {{ $pages = where $pages "Params.library_hidden" "ne" true }}
+  {{ $topics := slice }}
+  {{ range $pages }}{{ range .Params.topics }}{{ $topics = $topics | append . }}{{ end }}{{ end }}
+  {{ $topics = $topics | uniq }}
+  {{ $categories := .Sections.ByWeight }}
+
+  <header class="tl-hero">
+    <div class="tl-container tl-hero__inner">
+      <p class="tl-eyebrow">Practical Architecture / Knowledge base</p>
+      <h1>{{ .Title }}</h1>
+      <p class="tl-hero__description">{{ .Description }}</p>
+      <div class="tl-hero__actions">
+        <a class="tl-button" href="#library-catalog">Explore the catalog</a>
+        <a class="tl-button tl-button--secondary" href="{{ "posts/" | relLangURL }}">Read the blog</a>
+      </div>
+      <div class="tl-stats" aria-label="Library summary">
+        <div class="tl-stat"><strong>{{ len $pages }}</strong><span>Published documents</span></div>
+        <div class="tl-stat"><strong>{{ len $categories }}</strong><span>Document collections</span></div>
+        <div class="tl-stat"><strong>{{ len $topics }}</strong><span>Technical topics</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="tl-section" aria-labelledby="collections-title">
+    <div class="tl-container">
+      <div class="tl-section-heading">
+        <div>
+          <p class="tl-eyebrow">Browse by purpose</p>
+          <h2 id="collections-title">Documentation collections</h2>
+        </div>
+        <p>Move from implementation detail to architectural reasoning without leaving the same repository or publishing workflow.</p>
+      </div>
+      <ul class="tl-category-grid">
+        {{ range $categories }}
+          {{ $documentCount := len .RegularPagesRecursive }}
+          <li class="tl-category-card">
+            <span class="tl-category-card__count">{{ $documentCount }} {{ cond (eq $documentCount 1) "document" "documents" }}</span>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            <p>{{ .Description }}</p>
+          </li>
+        {{ end }}
+      </ul>
+    </div>
+  </section>
+
+  <section class="tl-section" aria-labelledby="catalog-title">
+    <div class="tl-container">
+      <div class="tl-section-heading">
+        <div>
+          <p class="tl-eyebrow">Search and filter</p>
+          <h2 id="catalog-title">Technical catalog</h2>
+        </div>
+        <p>Search across titles, descriptions, technologies, topics, document types, and lifecycle information.</p>
+      </div>
+      {{ partial "docs/catalog.html" (dict "pages" $pages "headingLevel" 3) }}
+    </div>
+  </section>
+{{ end }}

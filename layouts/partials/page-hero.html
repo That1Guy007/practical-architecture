@@ -1,0 +1,28 @@
+{{- $hero := false -}}
+{{- $heroURL := "" -}}
+{{- with .Params.featureimage -}}
+  {{- if or (strings.HasPrefix . "http:") (strings.HasPrefix . "https:") -}}
+    {{- $heroURL = . -}}
+  {{- else -}}
+    {{- $hero = $.Resources.GetMatch . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (or $hero $heroURL) -}}
+  {{- range slice "*featured*" "*feature*" "*cover*" "*background*" -}}
+    {{- if not $hero -}}{{- $hero = $.Resources.GetMatch . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $hero -}}{{- $heroURL = .RelPermalink -}}{{- end -}}
+{{- $heroAlt := .Params.featureAlt | default .Params.featureImageAlt | default "" -}}
+{{- with $heroURL }}
+  <div class="cds--grid pa-page-hero">
+    <div class="cds--row">
+      <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+        <figure>
+          <img src="{{ . | safeURL }}" alt="{{ $heroAlt }}" {{ if not $heroAlt }}role="presentation"{{ end }}>
+          {{ with $.Params.featureimagecaption }}<figcaption>{{ . | markdownify }}</figcaption>{{ end }}
+        </figure>
+      </div>
+    </div>
+  </div>
+{{- end }}

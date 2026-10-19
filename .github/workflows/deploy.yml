@@ -35,7 +35,19 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version-file: go.mod
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Carbon build dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Compile and verify Carbon assets
+        run: npm test
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
@@ -51,20 +63,24 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: /tmp/hugo_cache
-          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum', 'assets/**') }}
+          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum', 'package-lock.json', 'assets/**') }}
           restore-keys: hugo-${{ runner.os }}-
 
       - name: Build
         run: |
           hugo \
             --gc \
+            --cleanDestinationDir \
             --cacheDir /tmp/hugo_cache
+
+      - name: Validate generated site
+        run: npm run validate:technical-library
 
       - name: Save Hugo cache
         uses: actions/cache/save@v4
         with:
           path: /tmp/hugo_cache
-          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum', 'assets/**') }}
+          key: hugo-${{ runner.os }}-${{ hashFiles('**/go.sum', 'package-lock.json', 'assets/**') }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

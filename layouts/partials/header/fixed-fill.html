@@ -1,6 +1,58 @@
-<div class="min-h-[148px]"></div>
-<div id="site-header" class="fixed inset-x-0 bg-neutral dark:bg-neutral-800 z-100">
-  <div class="relative m-auto leading-7 max-w-7xl px-6 sm:px-14 md:px-24 lg:px-32">
-    {{ partial "header/basic.html" . }}
-  </div>
-</div>
+<cds-header aria-label="Practical Architecture">
+  <cds-skip-to-content></cds-skip-to-content>
+  <cds-header-menu-button
+    button-label-active="Close navigation"
+    button-label-inactive="Open navigation">
+  </cds-header-menu-button>
+  <cds-header-name href="{{ .Site.Home.RelPermalink }}" prefix="Practical">Architecture</cds-header-name>
+
+  <cds-header-nav menu-bar-label="Primary navigation">
+    {{ range .Site.Menus.main }}
+      {{ if .HasChildren }}
+        <cds-header-menu menu-label="{{ .Name }}" trigger-content="{{ .Name }}">
+          <cds-header-menu-item href="{{ .URL }}" {{ if eq $.RelPermalink .URL }}is-active aria-current="page"{{ end }}>All {{ .Name | lower }}</cds-header-menu-item>
+          {{ range .Children }}
+            <cds-header-menu-item href="{{ .URL }}" {{ if eq $.RelPermalink .URL }}is-active aria-current="page"{{ end }}>
+              {{ .Name }}
+            </cds-header-menu-item>
+          {{ end }}
+        </cds-header-menu>
+      {{ else if .Name }}
+        <cds-header-nav-item href="{{ .URL }}" {{ if eq $.RelPermalink .URL }}is-active aria-current="page"{{ end }}>
+          {{ .Name }}
+        </cds-header-nav-item>
+      {{ else if eq .Identifier "linkedin" }}
+        <cds-header-nav-item href="{{ .URL }}">LinkedIn</cds-header-nav-item>
+      {{ end }}
+    {{ end }}
+  </cds-header-nav>
+
+  {{ if site.Params.enableSearch | default false }}
+    <div class="pa-header-actions">
+      <cds-button id="search-button" kind="ghost">Search</cds-button>
+    </div>
+  {{ end }}
+
+  <cds-side-nav is-not-persistent aria-label="Mobile navigation" collapse-mode="responsive">
+    <cds-side-nav-items>
+      <cds-side-nav-link href="{{ .Site.Home.RelPermalink }}" {{ if .IsHome }}active aria-current="page"{{ end }}>Home</cds-side-nav-link>
+      {{ range .Site.Menus.main }}
+        {{ if .HasChildren }}
+          <cds-side-nav-menu title="{{ .Name }}">
+            <cds-side-nav-menu-item href="{{ .URL }}" {{ if eq $.RelPermalink .URL }}active aria-current="page"{{ end }}>All {{ .Name | lower }}</cds-side-nav-menu-item>
+            {{ range .Children }}
+              <cds-side-nav-menu-item href="{{ .URL }}" {{ if eq $.RelPermalink .URL }}active aria-current="page"{{ end }}>{{ .Name }}</cds-side-nav-menu-item>
+            {{ end }}
+          </cds-side-nav-menu>
+        {{ else if .Name }}
+          <cds-side-nav-link href="{{ .URL }}" {{ if eq $.RelPermalink .URL }}active aria-current="page"{{ end }}>{{ .Name }}</cds-side-nav-link>
+        {{ else if eq .Identifier "linkedin" }}
+          <cds-side-nav-link href="{{ .URL }}">LinkedIn</cds-side-nav-link>
+        {{ end }}
+      {{ end }}
+      {{ if site.Params.enableSearch | default false }}
+        <cds-side-nav-link id="search-button-mobile" href="#search-modal">Search</cds-side-nav-link>
+      {{ end }}
+    </cds-side-nav-items>
+  </cds-side-nav>
+</cds-header>

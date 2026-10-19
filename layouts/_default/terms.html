@@ -1,0 +1,61 @@
+{{ define "main" }}
+  {{ .Scratch.Set "scope" "terms" }}
+
+  {{ $showHero := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.taxonomy "key" "showhero" "default" false) }}
+  {{ $showBreadcrumbs := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.taxonomy "key" "showbreadcrumbs" "default" false) }}
+  {{ $showTermCount := partial "resolve-bool.html" (dict "page" .Params "site" site.Params.taxonomy "key" "showtermcount" "default" true) }}
+  {{ if $showHero }}
+    {{ partial "page-hero.html" . }}
+  {{ end }}
+
+  {{ partial "page-header.html" (dict
+    "context" .
+    "title" .Title
+    "description" .Description
+    "showBreadcrumbs" $showBreadcrumbs
+  ) }}
+
+  {{ if .Content }}
+    <section class="cds--grid pa-page-intro" aria-label="Introduction">
+      <div class="cds--row">
+        <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16 pa-page-intro__content pa-article-content">
+          {{ .Content }}
+        </div>
+      </div>
+    </section>
+  {{ end }}
+
+  {{ $terms := .Data.Terms.Alphabetical }}
+  {{ if $terms }}
+    <section class="pa-taxonomy-list" aria-label="{{ .Title }}">
+      <div class="cds--grid cds--grid--narrow pa-card-grid">
+        <ul class="cds--row pa-card-grid__row">
+          {{ range $terms }}
+            {{ $href := .Page.RelPermalink }}
+            {{ with .Page.Params.externalUrl }}{{ $href = . }}{{ end }}
+            <li class="cds--col-sm-4 cds--col-md-4 cds--col-lg-4 pa-card-grid__item">
+              <cds-clickable-tile href="{{ $href | safeURL }}" class="pa-taxonomy-card">
+                <article class="pa-taxonomy-card__content">
+                  <h2 class="pa-taxonomy-card__title">{{ .Page.Title | emojify }}</h2>
+                  {{ if $showTermCount }}
+                    <p class="pa-taxonomy-card__count">
+                      {{ .Count }} {{ cond (eq .Count 1) "article" "articles" }}
+                    </p>
+                  {{ end }}
+                </article>
+              </cds-clickable-tile>
+            </li>
+          {{ end }}
+        </ul>
+      </div>
+    </section>
+  {{ else }}
+    <div class="cds--grid pa-empty-state">
+      <div class="cds--row">
+        <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+          <p>No topics are available yet.</p>
+        </div>
+      </div>
+    </div>
+  {{ end }}
+{{ end }}
