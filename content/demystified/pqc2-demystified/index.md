@@ -20,7 +20,7 @@ heroStyle: "big"
 
 #### TL;DR
 
-*Cryptographically Relevant Quantum Computers, or CRQCs, are on the horizon. When they arrive, they will threaten many of the public-key cryptography algorithms that secure today’s digital world.*
+*Mitigating the risks to PQC is an organizational wide task with practical architecture considerations.*
 
 *The time has come to prepare.*
 
@@ -28,6 +28,8 @@ heroStyle: "big"
 
 
 ## Practical Architecture Considerations
+
+In Part 1: PQC Demystified we went through what PQC is, why it matters, risks associuated with not achieving PQC, and the PQC timeline. In Part 2, we will go through some of the implimentation designs, costs, migration expecatations, operational impacts, trade offs, and lastly my approach for success. 
 
 This is where PQC becomes real.
 
