@@ -1,7 +1,7 @@
 ---
 title: "Post-Quantum Cryptography, Demystified. Part 1"
 date: 2026-06-03
-lastmod: 2026-06-03
+lastmod: 2026-10-19
 draft: false
 description: "Part 1 - Quantum cryptography vs classical cryptography and the path towards adoption."
 summary: "Part 1 - Understanding the current state of PQC, the threats, and how to start to mitigate those risks."
@@ -19,23 +19,23 @@ heroStyle: "big"
 
 #### TL;DR
 
-*Cryptographically Relevant Quantum Computers, or CRQCs, are on the horizon. When they arrive, they will threaten many of the public-key cryptography algorithms that secure today’s digital world.*
+*Cryptographically Relevant Quantum Computers, or CRQCs, are on the horizon. When they arrive, they may threaten many of the public-key cryptography algorithms that secure today’s digital world.*
 
 *The time has come to prepare.*
 
-*Organizations need to enable their teams, ask better vendor questions, inventory their cryptographic ecosystem, prioritize the highest-risk systems, create a course of action, execute migrations, automate certificate and key lifecycle management, and build crypto agility so they can transition from classical cryptography to quantum-resistant cryptography without treating every future algorithm change like a once-in-a-generation fire drill.*
+*Organizations need to enable their teams, ask informed questions, inventory their cryptographic ecosystem, prioritize the highest-risk systems, create a course of action, execute migrations, automate certificate and key lifecycle management, and build crypto agility so they can transition from classical cryptography to quantum-resistant cryptography without treating every future algorithm change like a once-in-a-generation fire drill.*
 
 ## Q-Day
 
-Quantum computers; It sounds like science fiction, but the security threat they create is very real.
+Quantum computers; They sounds like science fiction, but the security threat they create is very real.
 
-The concern is not that every quantum computer will magically break every encryption system. The concern is that a sufficiently powerful quantum computer, often called a Cryptographically Relevant Quantum Computer, could break many of the public-key cryptographic algorithms that modern systems depend on.
+The concern is not that every quantum computer will magically break every encryption system. The concern is that a sufficiently powerful quantum computer, often called a Cryptographically Relevant Quantum Computer (CRQC), could break many of the public-key cryptographic algorithms that modern systems depend on.
 
-> ℹ️ **Cryptographically Relevant Quantum Computer (CRQC)**
+> ℹ️ **Cryptographically Relevant Quantum Computer**
 >
 > A CRQC is a quantum computer powerful enough to attack real-world cryptographic systems that would be infeasible to break with classical computers. This term distinguishes abstract physics experiments from machines that present an actual security risk
 
-Even though at its most basic level we are just talking about math, the math that today serves as the foundation for cryptography is at risk. This is because the math that is securing our resources today is essentially too hard for classical computers to reverse engineer in a realistic timeframe. More specifically there are still challenges with current classical computers and solving math problems such as prime number factorization.
+At the most basic level we are just talking about math, the math that today serves as the foundation for cryptography is at risk. This is because the math that is securing our resources today is essentially too hard for classical computers to reverse engineer in a realistic timeframe. More specifically there are still challenges with current classical computers and solving the math problems such as prime number factorization.
 
 This matters because much of today’s digital trust depends on math, but these math problems are difficult for classical computers to solve in a realistic timeframe. RSA, for example, relies on the difficulty of factoring very large numbers. Even elliptic curve cryptography (ECC) relies on similar but different math, but the theme is the same: these systems are secure because the reverse math operation is computationally impractical for classical machines.
 
@@ -52,7 +52,7 @@ That evolution is Post-Quantum Cryptography.
 ---
 
 ## Why This Matters
-The cryptography we have relied on for decades has secured emails, banking systems, cloud services, military communications and more. Throughout this time, the practical assumption was simple: if you used modern algorithms correctly, with appropriate key sizes, attackers could not realistically break the cryptography with classical computing power.
+The cryptography we have relied on for decades has secured emails, banking systems, cloud services, military communications and more. Throughout this time, the practical assumption was simple: if you used modern algorithms correctly, with appropriate key sizes, attackers could not realistically break the cryptography with the available classical computing power.
 
 A CRQC changes the risk model.
 
@@ -68,9 +68,7 @@ Quantum computing is to classical computing what the internet was to postal mail
 
 The internet did not make postal mail disappear. It changed the assumptions around speed, scale, and even organizational designs. Quantum computing will not make classical computing disappear. You probably will not use a quantum computer to send an email, write a document, or browse the web. Classical and quantum systems will likely exist together but the existence of quantum computing changes the assumptions that classical cryptography depends on.
 
-
 This is the shift. PQC is not about replacing every computer with a quantum computer. It is about replacing vulnerable cryptographic assumptions before they become enterprise-wide liabilities.
-
 
 ---
 
@@ -102,9 +100,7 @@ Just as SOC2 has become a "baseline" security risk mitigator between organizatio
 Think SOC2, do I trust you to do business with me? Can I keep my consumers' information safe? Respect their privacy? -->
 ## What you need to know
 
-When people talk about PQC, the conversation often becomes overly focused on the non-existent viable quantum computer or that vendors will all just deal with the PQC problem. That is understandable, but incomplete.
-
-The risks are already here.
+When people talk about PQC, the conversation often becomes overly focused on the non-existent viable quantum computer or that vendors will all just deal with the PQC problem. That is understandable, but incomplete as the risks are already here.
 
 ### 1. Harvest Now, Decrypt Later
 

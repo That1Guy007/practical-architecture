@@ -1,0 +1,6 @@
+{{ if eq .Type "flow" }}
+  {{ .Page.Store.Set "hasFlow" true }}
+  {{ partial "docs/flow.html" . }}
+{{ else }}
+  {{ transform.HighlightCodeBlock . }}
+{{ end }}

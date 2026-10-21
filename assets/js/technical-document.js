@@ -49,6 +49,105 @@
       .filter(Boolean);
   }
 
+  function initializeFlowViewSets() {
+    const groupedFigures = new Map();
+
+    document.querySelectorAll("[data-tl-flow-view-set]").forEach(function (figure) {
+      const setID = figure.dataset.tlFlowViewSet;
+      if (!setID) {
+        return;
+      }
+      if (!groupedFigures.has(setID)) {
+        groupedFigures.set(setID, []);
+      }
+      groupedFigures.get(setID).push(figure);
+    });
+
+    groupedFigures.forEach(function (figures, setID) {
+      if (figures.length < 2 || !figures[0].parentNode) {
+        return;
+      }
+
+      const container = document.createElement("section");
+      const tabs = document.createElement("div");
+      const setLabel = figures[0].dataset.tlFlowViewSetLabel || "Diagram views";
+      const buttons = [];
+
+      container.className = "tl-flow-set";
+      container.classList.toggle(
+        "tl-flow-set--wide",
+        figures.some(function (figure) {
+          return figure.classList.contains("tl-flow--wide");
+        }),
+      );
+      container.dataset.tlFlowViewSetContainer = setID;
+      tabs.className = "tl-flow-set__tabs";
+      tabs.setAttribute("role", "tablist");
+      tabs.setAttribute("aria-label", setLabel);
+
+      figures[0].parentNode.insertBefore(container, figures[0]);
+      container.appendChild(tabs);
+
+      function activateView(index, moveFocus) {
+        figures.forEach(function (figure, figureIndex) {
+          const active = figureIndex === index;
+          figure.hidden = !active;
+          figure.setAttribute("aria-hidden", String(!active));
+          buttons[figureIndex].setAttribute("aria-selected", String(active));
+          buttons[figureIndex].tabIndex = active ? 0 : -1;
+        });
+        if (moveFocus) {
+          buttons[index].focus();
+        }
+      }
+
+      figures.forEach(function (figure, index) {
+        const label = figure.dataset.tlFlowViewLabel || `View ${index + 1}`;
+        const figureID = figure.id || `tl-flow-view-${setID}-${index + 1}`;
+        const buttonID = `${figureID}-tab`;
+        const button = document.createElement("button");
+
+        figure.id = figureID;
+        figure.setAttribute("role", "tabpanel");
+        figure.setAttribute("aria-labelledby", buttonID);
+        figure.classList.add("tl-flow-set__panel");
+
+        button.className = "tl-flow-set__tab";
+        button.id = buttonID;
+        button.type = "button";
+        button.setAttribute("role", "tab");
+        button.setAttribute("aria-controls", figureID);
+        button.textContent = label;
+        button.addEventListener("click", function () {
+          activateView(index, false);
+        });
+        button.addEventListener("keydown", function (event) {
+          let nextIndex = index;
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+            nextIndex = (index + 1) % figures.length;
+          } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+            nextIndex = (index - 1 + figures.length) % figures.length;
+          } else if (event.key === "Home") {
+            nextIndex = 0;
+          } else if (event.key === "End") {
+            nextIndex = figures.length - 1;
+          } else {
+            return;
+          }
+          event.preventDefault();
+          activateView(nextIndex, true);
+        });
+
+        buttons.push(button);
+        tabs.appendChild(button);
+        container.appendChild(figure);
+      });
+
+      activateView(0, false);
+      container.classList.add("is-enhanced");
+    });
+  }
+
   function initializeFlow(figure) {
     const svg = figure.querySelector("[data-tl-flow-svg]");
     const viewportElement = figure.querySelector("[data-tl-flow-viewport]");
@@ -122,11 +221,7 @@
       node.addEventListener("blur", clearTrace);
       node.addEventListener("click", function (event) {
         event.stopPropagation();
-        if (node.classList.contains("is-active")) {
-          clearTrace();
-        } else {
-          traceNode(node);
-        }
+        traceNode(node);
       });
       node.addEventListener("keydown", function (event) {
         if (event.key === "Enter" || event.key === " ") {
@@ -361,6 +456,7 @@
   }
 
   function initialize() {
+    initializeFlowViewSets();
     document.querySelectorAll("[data-tl-flow]").forEach(initializeFlow);
     document.querySelectorAll("[data-tl-toc]").forEach(initializeToc);
   }

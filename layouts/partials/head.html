@@ -23,6 +23,7 @@
   {{ with resources.Get "css/palette.css" }}{{ $styles = $styles | append . }}{{ end }}
   {{ with resources.Get "css/carbon.css" }}{{ $styles = $styles | append . }}{{ end }}
   {{ with resources.Get "css/custom.css" }}{{ $styles = $styles | append . }}{{ end }}
+  {{ with resources.Get "css/blog-flow.css" }}{{ $styles = $styles | append . }}{{ end }}
   {{ if $styles }}
     {{ $bundle := $styles | resources.Concat "css/practical-architecture.css" | resources.Minify | resources.Fingerprint "sha512" }}
     <link rel="stylesheet" href="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}">

@@ -19,6 +19,13 @@
     {{ if site.Params.enableSearch | default false }}
       <script defer src="{{ "js/fuse.min.js" | relURL }}"></script>
     {{ end }}
+    {{ if .Store.Get "hasFlow" }}
+      {{ with resources.Get "js/technical-document.js" }}
+        {{ with . | resources.Minify | resources.Fingerprint "sha512" }}
+          <script defer src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}"></script>
+        {{ end }}
+      {{ end }}
+    {{ end }}
     {{ $scripts := slice }}
     {{ if site.Params.enableCodeCopy }}
       {{ with resources.Get "js/site.js" }}{{ $scripts = $scripts | append . }}{{ end }}
