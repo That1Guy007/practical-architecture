@@ -3,7 +3,7 @@ title: "Self-Hosted AI Platform Architecture"
 description: "A hypothetical reference architecture for running private inference and retrieval workloads on self-managed infrastructure."
 date: 2026-10-18
 lastmod: 2026-10-18
-draft: false
+draft: true
 document_type: "Architecture"
 topics:
   - "Artificial Intelligence and Machine Learning"

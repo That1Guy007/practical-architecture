@@ -3,7 +3,7 @@ title: "ADR-0001: Selecting a Remote Access Solution"
 description: "A hypothetical decision record comparing remote administration patterns for a self-hosted platform."
 date: 2026-10-18
 lastmod: 2026-10-18
-draft: false
+draft: true
 document_type: "ADR"
 layout: "adr"
 adr_id: "ADR-0001"

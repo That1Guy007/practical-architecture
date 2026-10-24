@@ -59,7 +59,7 @@ Traditional TLS within HTTPS has three distinct jobs: key establishment, authent
 
 ### TLS Comparison: Traditional, Hybrid, and Post-Quantum
 
-TLS performs the same three jobs in every model. What changes is the public-key algorithm used for **key establishment** and **authentication**. The final data-encryption phase continues to use efficient symmetric encryption. Use the view buttons to compare each model on demand, then read the selected diagram from top to bottom: establish secret material, authenticate the server and handshake, then protect application data. On smaller screens, scroll horizontally to keep the nodes readable rather than shrinking the entire diagram.
+The three phases of TLS are consistent in the traditional, hybrid and post quantum workflows. The primary difference is the public-key algorithm used for **key establishment** and **authentication**. The final data-encryption phase continues to use efficient symmetric encryption algorithms (AES, ChaCha, etc).
 
 ```flow
 {
@@ -184,9 +184,9 @@ TLS performs the same three jobs in every model. What changes is the public-key 
 }
 ```
 
-### Inside a Hybrid TLS 1.3 Handshake
+#### Inside a Hybrid TLS 1.3 Handshake
 
-The comparison diagrams show **what** changes between traditional, hybrid, and post-quantum TLS. This sequence shows **when** each operation happens in a full, server-authenticated TLS 1.3 handshake using [X25519MLKEM768](https://www.rfc-editor.org/rfc/rfc10024.html). It intentionally omits client-certificate authentication, session resumption, 0-RTT, and the `HelloRetryRequest` path so the main path stays readable. The browser is assumed to send an acceptable hybrid key share in its first `ClientHello`. The Browser and Server lanes contain only local work; the Network lane contains only transmitted messages.
+Understanding TLS at a high level facilitates our understanding of the impact of **what** changes between traditional, hybrid, and post-quantum TLS. Taking a deeper view of TLS operations can provide further insight but you can skip this This sequence shows **when** each operation happens in a full, server-authenticated TLS 1.3 handshake using [X25519MLKEM768](https://www.rfc-editor.org/rfc/rfc10024.html). It intentionally omits client-certificate authentication, session resumption, 0-RTT, and the `HelloRetryRequest` path so the main path stays readable. The browser is assumed to send an acceptable hybrid key share in its first `ClientHello`. The Browser and Server lanes contain only local work; the Network lane contains only transmitted messages.
 
 The critical ML-KEM relationship is: **Encaps(browser ML-KEM public key) → ciphertext + shared secret** on the server, followed by **Decaps(browser ML-KEM private key, ciphertext) → the same shared secret** in the browser. The ciphertext is public; the matching shared secret is never transmitted.
 
