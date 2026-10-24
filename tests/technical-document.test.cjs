@@ -1,15 +1,22 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const test = require("node:test");
 
 const {
   clamp,
   connectedEdgeIds,
   createViewport,
+  initializeFlow,
   panViewport,
   zoomViewport,
 } = require("../assets/js/technical-document.js");
+
+const root = path.resolve(__dirname, "..");
+const siteStyles = fs.readFileSync(path.join(root, "assets/scss/site.scss"), "utf8");
+const blogFlowStyles = fs.readFileSync(path.join(root, "assets/css/blog-flow.css"), "utf8");
 
 test("clamp constrains numeric and numeric-string values", () => {
   assert.equal(clamp(-1, 0, 10), 0);
@@ -58,4 +65,65 @@ test("connectedEdgeIds normalizes the space-delimited data attribute", () => {
     "edge-3",
   ]);
   assert.deepEqual(connectedEdgeIds(), []);
+});
+
+test("initializeFlow enables controls when the optional detail region is absent", () => {
+  const addedClasses = [];
+  const attributes = new Map();
+  const svg = {
+    dataset: { width: "900", height: "260" },
+    addEventListener() {},
+    setAttribute(name, value) {
+      attributes.set(name, value);
+    },
+  };
+  const viewport = { classList: { add() {}, remove() {} } };
+  const pauseButton = {
+    getAttribute() {
+      return "false";
+    },
+    setAttribute() {},
+  };
+  const controls = { addEventListener() {} };
+  const figure = {
+    classList: {
+      add(value) {
+        addedClasses.push(value);
+      },
+      remove() {},
+      toggle() {},
+    },
+    querySelector(selector) {
+      if (selector === "[data-tl-flow-svg]") return svg;
+      if (selector === "[data-tl-flow-viewport]") return viewport;
+      if (selector === '[data-tl-flow-action="pause"]') return pauseButton;
+      if (selector === ".tl-flow__controls") return controls;
+      return null;
+    },
+    querySelectorAll() {
+      return [];
+    },
+  };
+
+  initializeFlow(figure);
+
+  assert.deepEqual(addedClasses, ["is-enhanced"]);
+  assert.equal(attributes.get("viewBox"), "0 0 900 260");
+});
+
+test("wide blog flows stay inside the article column when a table of contents is present", () => {
+  assert.match(siteStyles, /--pa-readable-width:\s*44rem/);
+  assert.match(
+    siteStyles,
+    /\.pa-article-content\s*{[^}]*inline-size:\s*100%[^}]*max-inline-size:\s*none/s,
+  );
+  assert.match(
+    siteStyles,
+    /\.pa-article-content\s*>\s*:not\(\.tl-flow\):not\(\.tl-flow-set\)\s*{[^}]*max-inline-size:\s*var\(--pa-readable-width\)/s,
+  );
+
+  const wideFlowRule = blogFlowStyles.match(/\.pa-body \.tl-flow--wide\s*{([^}]*)}/);
+  assert.ok(wideFlowRule, "expected a wide blog flow rule");
+  assert.match(wideFlowRule[1], /max-inline-size:\s*76rem/);
+  assert.doesNotMatch(wideFlowRule[1], /100vw|translateX/);
 });

@@ -155,7 +155,7 @@
     const pauseButton = figure.querySelector('[data-tl-flow-action="pause"]');
     const controls = figure.querySelector(".tl-flow__controls");
 
-    if (!svg || !viewportElement || !detail || !pauseButton || !controls) {
+    if (!svg || !viewportElement || !pauseButton || !controls) {
       return;
     }
 
@@ -163,7 +163,7 @@
     let viewport = Object.assign({}, fullViewport);
     let dragState = null;
     let userSelectedMotion = false;
-    const idleDetail = detail.textContent;
+    const idleDetail = detail ? detail.textContent : "";
     const nodes = Array.from(figure.querySelectorAll("[data-tl-flow-node]"));
     const edges = new Map(
       Array.from(figure.querySelectorAll("[data-tl-flow-edge][id]")).map(function (edge) {
@@ -190,7 +190,9 @@
       figure.querySelectorAll(".is-active").forEach(function (element) {
         element.classList.remove("is-active");
       });
-      detail.textContent = idleDetail;
+      if (detail) {
+        detail.textContent = idleDetail;
+      }
     }
 
     function traceNode(node) {
@@ -203,7 +205,9 @@
           edge.classList.add("is-active");
         }
       });
-      detail.textContent = node.dataset.detail || idleDetail;
+      if (detail) {
+        detail.textContent = node.dataset.detail || idleDetail;
+      }
     }
 
     nodes.forEach(function (node) {
@@ -461,7 +465,7 @@
     document.querySelectorAll("[data-tl-toc]").forEach(initializeToc);
   }
 
-  const api = { clamp, createViewport, zoomViewport, panViewport, connectedEdgeIds };
+  const api = { clamp, createViewport, zoomViewport, panViewport, connectedEdgeIds, initializeFlow };
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = api;

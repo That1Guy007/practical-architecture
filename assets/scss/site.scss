@@ -5,7 +5,7 @@
 :root {
   color-scheme: dark;
   --pa-header-height: #{spacing.$spacing-09};
-  --pa-readable-width: 70ch;
+  --pa-readable-width: 44rem;
 }
 
 html {
@@ -430,6 +430,11 @@ cds-clickable-tile.pa-taxonomy-card {
   background: var(--cds-layer-01);
 }
 
+.pa-article-header__content {
+  max-inline-size: var(--pa-readable-width);
+  margin-inline: auto;
+}
+
 .pa-article-header cds-breadcrumb {
   margin-block-end: spacing.$spacing-08;
 }
@@ -449,9 +454,21 @@ cds-clickable-tile.pa-taxonomy-card {
 }
 
 .pa-article-content {
-  max-inline-size: var(--pa-readable-width);
+  inline-size: 100%;
+  max-inline-size: none;
 
   @include type.type-style('body-02');
+}
+
+.pa-article-content > :not(.tl-flow):not(.tl-flow-set) {
+  max-inline-size: var(--pa-readable-width);
+  margin-inline: auto;
+}
+
+.pa-article-column--centered > .pa-taxonomy,
+.pa-article-column--centered > .pa-sharing,
+.pa-article-column--centered > .pa-article-pagination {
+  margin-inline: auto;
 }
 
 .pa-article-content > :first-child {

@@ -39,25 +39,25 @@ body.pa-body {
 }
 
 .pa-body .tl-flow {
+  inline-size: 100%;
   max-inline-size: 64rem;
   padding: 0;
-  margin: 2rem 0;
+  margin: 2rem auto;
   background: transparent;
 }
 
 .pa-body .tl-flow--wide {
-  inline-size: min(calc(100vw - 2rem), 95rem);
-  max-inline-size: none;
+  max-inline-size: 76rem;
 }
 
 .pa-body .tl-flow-set {
+  inline-size: 100%;
   max-inline-size: 64rem;
-  margin: 2rem 0;
+  margin: 2rem auto;
 }
 
 .pa-body .tl-flow-set--wide {
-  inline-size: min(calc(100vw - 2rem), 95rem);
-  max-inline-size: none;
+  max-inline-size: 76rem;
 }
 
 .pa-body .tl-flow-set__tabs {
@@ -433,25 +433,6 @@ body.pa-body {
 
   .pa-body .tl-flow__control {
     padding-inline: 0.5rem;
-  }
-}
-
-@media (max-width: 65.98rem) {
-  .pa-body .tl-flow--wide .tl-flow__viewport {
-    overflow-x: auto;
-  }
-
-  .pa-body .tl-flow--wide .tl-flow__svg {
-    inline-size: 62rem;
-    min-inline-size: 62rem;
-    min-block-size: 0;
-    touch-action: auto;
-  }
-}
-
-@media (min-width: 66rem) {
-  .pa-body .tl-flow--wide {
-    inline-size: min(calc(100vw - 4rem), 95rem);
   }
 }
 

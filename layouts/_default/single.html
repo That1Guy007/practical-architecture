@@ -12,16 +12,18 @@
     <header class="pa-article-header">
       <div class="cds--grid">
         <div class="cds--row">
-          <div class="cds--col-sm-4 cds--col-md-7 cds--col-lg-12">
-            {{ if $showBreadcrumbs }}{{ partial "breadcrumbs.html" . }}{{ end }}
-            {{ with .Params.series }}
+          <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-16">
+            <div class="pa-article-header__content">
+              {{ if $showBreadcrumbs }}{{ partial "breadcrumbs.html" . }}{{ end }}
+              {{ with .Params.series }}
               <p class="pa-eyebrow">{{ delimit . " · " }}</p>
-            {{ else }}
+              {{ else }}
               <p class="pa-eyebrow">{{ .Section | humanize }}</p>
-            {{ end }}
-            <h1>{{ .Title | emojify }}</h1>
-            {{ with .Description }}<p class="pa-article-deck">{{ . }}</p>{{ end }}
-            {{ partial "article-meta.html" . }}
+              {{ end }}
+              <h1>{{ .Title | emojify }}</h1>
+              {{ with .Description }}<p class="pa-article-deck">{{ . }}</p>{{ end }}
+              {{ partial "article-meta.html" . }}
+            </div>
           </div>
         </div>
       </div>
@@ -41,7 +43,7 @@
 
     <div class="cds--grid pa-article-layout">
       <div class="cds--row">
-        <div class="cds--col-sm-4 cds--col-md-8 cds--col-lg-11">
+        <div class="cds--col-sm-4 cds--col-md-8 {{ if $showToc }}cds--col-lg-11{{ else }}cds--col-lg-16 pa-article-column--centered{{ end }}">
           <div class="pa-article-content">
             {{ .Content }}
           </div>

@@ -144,7 +144,7 @@ The market is also waking up. [Government RFIs](https://sam.gov/workspace/contra
 
 ## Takeaway
 
-Post Quantum Cryptography is not simply about mitigating Q Day, but about building a strong foundation through visibility, automation, and enabling crypto agility to adapt with the next generation of quantum computers. To learn more about how to mitigate these risks, check out Part 2 where we dive into more of the implementation, cost, and impact on becoming PQC ready.
+Post Quantum Cryptography is not simply about mitigating Q Day, but about building a strong foundation through visibility, automation, and enabling crypto agility to adapt with the next generation of quantum computers. To learn more about how to mitigate these risks, check out [Part 2]({{< ref "/demystified/pqc2-demystified" >}}) where we dive into the algorithms their intentions, some of the nuances with PQC, and what has been done for you versus what you need to focus on to become PQC ready.
 
 ## Acronyms and Definitions
 
