@@ -210,8 +210,16 @@ Encryption, most people understand; but think of this as the method of protectin
 > It should be noted that the PQC NIST approved algorithms are all trying to mitigate Shors algorithm, which proves in theory that a CRQC can break traditional asymetric algorithms used in the [key establishment phase]({{< ref "/demystified/pqc2-demystified" >}}#tls-hla-key-establishment) and the [authentication phase]({{< ref "/demystified/pqc2-demystified" >}}##tls-hla-authn) within TLS. Grovers algorithm does also in theory prove that symmetric algorithms such as AES and ChaCha are vulnerable to a CRQC by reducing the complexity of an exhaustive search but the risk at the time of writing is not as severe. This does not mean that symmetric algorithms such as AES wont become more vulnerable to a CRQC, we just havent proven it yet.
 
 ### PQC quirks
-<!-- Going to talk about lack of browser support for pure PQC, OpenSSL support for internal communication, sizes of the keys, signatures, algorithms -->
+<!-- Going to talk about lack of browser support for pure PQC, sizes of the keys, signatures, algorithms -->
+<!-- Dropping packets becuase of hardcoded expectation of packet sizes such as 10KB. -->
+<!-- TLS 1.2 not supported for PQC -->
+As with any technology that is becoming standard, there are a few quirks to be aware of. The two items that are top of mind; lack of support for pure PQC workflows, and the significant increase in data (signature, keys, etc). 
 
+<!-- , and PQC is only supported by TLS 1.3. This needs to be verified -->
+
+Lack of support for example with browsers can be a significant hurdle. Take for example, if you were to create an application and its server certificate were to leverage an ML-DSA signed certificate, even with the root existing in the clients CA store, the browser would not be able to trust the certificate becuase it does not know how to validate ML-DSA public key, signatures, and the TLS handshake. 
+
+There are other quirks I am sure, and please mention them in the chat for others to learn what you have discovered as well.
 One terminology correction matters here: when a browser supports `X25519MLKEM768`, it is normally supporting **hybrid key establishment**, not an "ML-KEM certificate." ML-KEM cannot sign a certificate or the TLS `CertificateVerify` message because it is a KEM, not a signature algorithm.
 
 Hybrid key establishment was easier for browsers and servers to deploy first because it is largely contained within the TLS supported-group and key-share machinery. The existing certificate, public CA, Certificate Transparency, trust-store, and server-authentication ecosystem can remain in place while ML-KEM protects the creation of new traffic keys.
@@ -221,7 +229,8 @@ Pure ML-DSA or SLH-DSA authentication changes much more of that ecosystem. Brows
 The standards are progressing: [RFC 9881](https://www.rfc-editor.org/rfc/rfc9881.html) defines ML-DSA identifiers for X.509 certificates, [RFC 9909](https://www.rfc-editor.org/rfc/rfc9909.html) does the same for SLH-DSA, and [RFC 9935](https://www.rfc-editor.org/rfc/rfc9935.html) defines ML-KEM keys in X.509. That does not make ML-KEM a signing algorithm, and standardization alone does not instantly create a universally trusted public-PKI deployment path.
 
 #### Considerations
-<!-- TAlk about MTCs and Hybrid certs -->
+<!-- TAlk about MTCs and Hybrid certs, OpenSSL support for internal communication-->
+
 
 ### What needs to be done
 <!-- Talk about the implementation of ML-KEM within public TLS to mitigate HNDL, talk about home networks and packet captures, talk about internal private communications for companies, and talking PIV or CAC cards? -->
